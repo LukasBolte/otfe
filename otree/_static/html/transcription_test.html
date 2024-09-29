@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:,">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="transcriptionTask"></div>
+
+    <!-- Add reference to transcription.js -->
+    <script src="../js/transcription.js"></script>
+    <link rel="stylesheet" href="../css/transcription.css">
+    <script>
+        const transcriptionTask = new transcription({
+            root: "transcriptionTask", // The ID of the HTML element where everything will be appended
+            csvFile: "letters.csv", // The path to the CSV file
+            paymentPerSuccess: "25",
+            startingRowIndex: 2, // Starting from the third row (index 2)
+            maxMistakes: 2, // Maximum number of mistakes allowed
+            submitCooldown: 5,
+            mistakeMessage: "Unfortunately, the transcription had too many mistakes to be accepted.",
+            successMessage: "Transcription was correct!",
+    
+            // Array of objects for the entire Greek alphabet (lowercase)
+            keyboardLetters: [
+                { char: "α" }, { char: "β" }, { char: "γ" }, { char: "δ" }, { char: "ε" },
+                { char: "ζ" }, { char: "η" }, { char: "θ" }, { char: "ι" }, { char: "κ" },
+                { char: "λ" }, { char: "μ" }, { char: "ν" }, { char: "ξ" }, { char: "ο" },
+                { char: "π" }, { char: "ρ" }, { char: "σ" }, { char: "τ" }, { char: "υ" },
+                { char: "φ" }, { char: "χ" }, { char: "ψ" }, { char: "ω" }, { char: "." },
+                { char: ","}, { char: ";"}  
+            ]
+        });
+    </script>
+</body>
+</html>

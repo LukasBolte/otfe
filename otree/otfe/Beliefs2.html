@@ -1,0 +1,60 @@
+{% block title %}
+What do you think the tax will be? 
+{% endblock %}
+
+{% block content %}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+<p>
+    What is your expected tax rate for the second work period? You can review instructions by clicking on "Review Instructions."
+</p>
+
+{{ formfields }}
+
+
+
+<div class="col-md-12 text-center">
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+     Review Instructions
+    </button>
+</div>
+
+
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Review Instructions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            {{ include C.INSTRUCTIONS }}
+
+            {{ include C.INSTRUCTIONS2 }}
+
+            {{ include C.TAX_INSTRUCTIONS }}
+
+            {{ include C.INSTRUCTIONS_BELIEFS }}  
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<button style="float: right" class="btn btn-primary btn-large">Submit</button>
+
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

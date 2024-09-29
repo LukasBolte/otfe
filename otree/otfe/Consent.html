@@ -1,0 +1,71 @@
+{{ block title }}
+Consent
+{{ endblock }}
+
+{{ block content }}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+<ul>
+    <li>
+        You are asked to take part in a research study.
+    </li>
+    <li>
+        If you choose to be in the study, you will answer questions that will help us learn more about what factors influence individual decisions and behavior. 
+    </li>
+      <li>
+        The study will take approximately <b>{{ C.APPROX_TIME }}</b> minutes.
+    </li>
+    <li>
+        If you complete it, you will earn a <b>{{ session.config.participation_fee }} payment</b>. Depending on your choices and luck, you may earn additional money. The average total payment of participants completing the study is <b>{{ C.AVG_TOTAL_PAYMENT }}</b>. 
+    </li>
+    <li>
+        All payments and procedures will be implemented in exactly the manner described in the study instructions and on the Prolific platform.
+    </li>
+    <li>
+        You may stop the study at any time, but you will only get paid the full amount if you successfully complete the study.
+    </li>
+    <li>
+        The study is de-identified, and no one will be able to link your answers back to you.
+    </li>
+    <li>
+        This is a minimal risk study. We cannot and do not promise or guarantee that you will receive any benefits from participating in this study.
+    </li>
+    <li>
+        Questions, Concerns, or Complaints: If you have any questions, concerns, or complaints about this research study, its procedures, risks, and benefits, contact Lukas Bolte, <a href="mailto:lukas.bolte@outlook.com" target="_top">lukas.bolte@outlook.com</a>.
+    </li>
+    <li>
+        This study runs under CMU IRB #IRBSTUDY2015_00000482.
+    </li>
+    <li>
+        If you have questions about your rights as a research participant or are not satisfied with how this research is being conducted, you may contact the CMU IRB at <a href="mailto:irb-review@andrew.cmu.edu" target="_top">irb-review@andrew.cmu.edu</a> to speak to someone independent of the research team.
+    </li>
+</ul>
+<p>
+    Being in this study is voluntary.
+    Please exit the webpage if you do not want to participate.
+</p>
+
+<p>
+    If you agree to participate in this study, please click "Yes, I Agree" and "Next."
+</p>
+
+<button type="button" class="btn btn1 btn-primary" onclick="proceed()">Yes, I Agree</button>
+<button style="float: right" class="btn btn-primary btn-large" disabled id="id_next_button">Next</button>
+
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function proceed(){
+        y = document.getElementById("id_next_button")
+        y.removeAttribute("disabled");
+    }
+</script>
+{% endblock %}

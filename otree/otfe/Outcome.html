@@ -1,0 +1,38 @@
+{% block title %}
+Your earnings! 
+{% endblock %}
+
+{% block content %}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+
+<p>
+    Your total earnings after taxes are <b>{{ total_post_tax_earnings|cu }}</b>.
+</p>
+
+<p>
+    {{ belief_bonus_text }}
+</p>
+
+<p>
+    Your total payment, including the participation fee, is <b>{{ player.participant.payoff|cu }}</b>.
+</p>
+
+<p>
+    Thank you for participating in this study!
+</p>
+
+<button style="float: right" class="btn btn-primary btn-large">Next</button>
+
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% block title %}
+Unincentivized survey questions
+{% endblock %}
+
+{% block content %}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+
+
+
+<p>
+    <b>Question 1</b>
+</p>
+
+{{ formfield 'survey_student_loans' }}
+
+<p>
+    <b>Question 2</b>
+</p>
+
+{{ formfield 'survey_pandemic' }}
+
+<p>
+    <b>Question 3</b>
+</p>
+
+{{ formfield 'survey_wealth_tax' }}
+
+<p>
+    <b>Question 4</b>
+</p>
+{{ formfield 'survey_wealth_tax_personal' }}
+
+<p>
+    
+    <b>Question 5</b>
+</p>
+{{ formfield 'survey_repatriation' }}
+
+<p>
+    <b>Question 6</b>
+</p>
+
+{{ formfield 'survey_one_time_policies' }}
+
+
+<p>
+    <b>Question 7</b>
+</p>
+
+
+<div style="text-align: center;">
+    <img src="{% static 'img/taxbrackets.jpg' %}" alt="Image" style="width: 70%; height: auto; margin-right: 5px;">
+</div>
+
+{{ formfield 'survey_tax_rates_1' }}
+
+{{ formfield 'survey_tax_rates_2'}}
+
+{{ formfield 'survey_tax_rates_3' }}
+
+{{ formfield 'survey_tax_rates_4'}}
+
+{{ formfield 'survey_tax_rates_5' }}
+
+<button style="float: right" class="otree-btn-next btn btn-primary">Submit</button>
+
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% block title %}
+End of the third work period
+{% endblock %}
+
+{% block content %}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+<p>
+    Work period 3 has concluded. 
+</p>
+
+<p>
+    You successfully completed {{correct_attempts }} tasks. Your initial gross earnings are <b>{{ initial_gross_earnings|cu }}</b>.
+</p>
+
+{{ tax_info }}
+
+<button style="float: right" class="btn btn-primary btn-large">Next</button>
+
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

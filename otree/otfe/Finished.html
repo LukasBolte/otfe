@@ -1,0 +1,21 @@
+{{ block title }}
+Submit
+{{ endblock }}
+
+{{ block content }}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+<p>
+    Thank you for participating. Your total payment of {{ session.config.participation_fee }} will soon be transferred to your account. 
+</p>
+
+<p class="text-danger h4">
+    Please click "Submit" to submit the study. 
+</p>
+
+<button style="float: right" class="btn btn-primary btn-large">Submit</button>
+
+{% endblock %}

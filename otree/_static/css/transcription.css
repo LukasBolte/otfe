@@ -1,0 +1,43 @@
+.questionButton {
+    border: none;
+    outline: none;
+    padding: 10px 0px;
+    background-color: #f1f1f1;
+    outline:none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.active, .button:hover {
+    background-color: #666;
+    color: white;
+}
+
+.answerImage {
+    padding: 4px !important;
+}
+
+tr td{
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.img {
+    max-width: 100%;
+    max-height: 100%;
+}
+.border {
+    border-width:5px !important;
+}
+
+.table {
+    border-collapse: separate;
+}
+
+.hooverable:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+
+    }
+
+button:focus {outline:0;}

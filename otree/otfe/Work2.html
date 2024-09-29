@@ -1,0 +1,58 @@
+{% block title %}
+Second work period
+{% endblock %}
+
+{% block content %}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+<div id="transcriptionTask"></div>
+
+<input type="hidden" name="data_dummy" id="data_dummy"/>
+
+<!-- <button style="float: right" class="btn btn-primary btn-large">Next</button> -->
+
+{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block scripts %}
+
+<!-- Add reference to transcription.js -->
+
+<link rel="stylesheet" href="{% static 'css/transcription.css' %}">
+<script src="{% static 'js/transcription.js' %}"></script>
+
+  
+    <script>
+        const transcriptionTask = new transcription({
+            root: "transcriptionTask", // The ID of the HTML element where everything will be appended
+            csvFile: "{% static 'html/letters.csv' %}", // The path to the CSV file
+            paymentPerSuccess: "25",
+            startingRowIndex: 60, // Starting from the third row (index 2)
+            maxMistakes: 2, // Maximum number of mistakes allowed
+            submitCooldown: 10,
+            mistakeMessage: 'Unfortunately, the transcription had too many mistakes to be accepted.',
+            successMessage: "The transcription was correct!",
+            cacheUniqueID: "work_2" + "{{ participant_code }}", // Unique ID for the cache
+            work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
+            varName: "data_dummy", // Variable name for the cache
+            training: false,    
+            // Array of objects for the entire Greek alphabet (lowercase)
+            keyboardLetters: [
+                { char: "α" }, { char: "β" }, { char: "γ" }, { char: "δ" }, { char: "ε" },
+                { char: "ζ" }, { char: "η" }, { char: "θ" }, { char: "ι" }, { char: "κ" },
+                { char: "λ" }, { char: "μ" }, { char: "ν" }, { char: "ξ" }, { char: "ο" },
+                { char: "π" }, { char: "ρ" }, { char: "σ" }, { char: "τ" }, { char: "υ" },
+                { char: "φ" }, { char: "χ" }, { char: "ψ" }, { char: "ω" }, { char: "•" }  
+            ]   
+        });
+    </script>
+
+
+
+{% endblock %}

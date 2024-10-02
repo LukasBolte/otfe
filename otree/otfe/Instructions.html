@@ -8,6 +8,26 @@ Instructions
     <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
 {{ endif }}
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disable Text Selection</title>
+    
+    <style>
+      /* Disable text selection for the whole body */
+      body {
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+      }
+  
+
+    </style>
+</head>
+
 {{ include C.INSTRUCTIONS }}
  
 <p>
@@ -23,6 +43,11 @@ Instructions
 {% endblock %}
 
 {% block styles %}
+<style>
+.no-copy {
+  user-select: none;
+}
+</style>
 
 {% endblock %}
 
@@ -46,6 +71,7 @@ Instructions
             successMessage: "This work task was completed successfully. In the experiment, you would receive 25 cents.",
             cacheUniqueID: "training" + "{{ participant_code }}", // Unique ID for the cache
             work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
+            blurLevel: "blur(4px)",
             varName: "data_dummy", // Variable name for the cache
             training: true,    
             // Array of objects for the entire Greek alphabet (lowercase)

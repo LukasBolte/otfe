@@ -17,6 +17,7 @@ function transcription(parameters) {
     this.successMessage = parameters.successMessage; // Add the success message parameter
     this.cacheUniqueID = parameters.cacheUniqueID; // Add the cacheUniqueID parameter
     this.work_period_length = parameters.work_period_length; // Add the work_period_length parameter
+    this.blurLevel = parameters.blurLevel; // Add the blurLevel parameter
     this.varName = parameters.varName; // Add the varName parameter
     this.training = parameters.training !== undefined ? parameters.training : false; // Default to false
 
@@ -130,7 +131,7 @@ function transcription(parameters) {
             const letterSpan = document.createElement('span');
             letterSpan.innerText = letter; // Set the letter text (now Greek letters)
             letterSpan.style.fontSize = "40px"; // Adjust the font size
-            letterSpan.style.filter = "blur(5px)"; // Increased blur effect
+            letterSpan.style.filter = this.blurLevel; // Increased blur effect
             letterSpan.style.marginRight = "10px"; // Add some spacing between letters
             blurryTextDiv.appendChild(letterSpan);
         });

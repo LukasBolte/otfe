@@ -20,7 +20,8 @@ class C(BaseConstants):
     PARTICIPATION_FEE = 5
     ROW_PAYMENT = 25
     BELIEF_BONUS = 1
-    WORK_PERIOD_LENGTH = 10
+
+    WORK_PERIOD_LENGTH = 1 # change to 10 for real experiment
 
     INSTRUCTIONS_BELIEFS = 'otfe/Review-instructionsBeliefs.html'
     INSTRUCTIONS = 'otfe/Review-instructions.html'
@@ -69,10 +70,10 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     data_dummy = models.StringField(blank=True)
 
-    beliefs1 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate:</b>')
-    beliefs2 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate:</b>')
-    beliefs3 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate:</b>')
-    beliefs4 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate:</b>')
+    beliefs1 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
+    beliefs2 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
+    beliefs3 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
+    beliefs4 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
 
     cq_1 = models.IntegerField(blank=True,
         choices=[
@@ -102,7 +103,7 @@ class Player(BasePlayer):
         choices=[
             (1, 'Definitely less willing'),
             (2, 'Less willing'),
-            (3, 'Neutral'),
+            (3, 'No change'),
             (4, 'More willing'),
             (5, 'Definitely more willing'),
         ],
@@ -115,7 +116,7 @@ class Player(BasePlayer):
         choices=[
             (1, 'Definitely less willing'),
             (2, 'Less willing'),
-            (3, 'Neutral'),
+            (3, 'No change'),
             (4, 'More willing'),
             (5, 'Definitely more willing'),
         ],
@@ -128,7 +129,7 @@ class Player(BasePlayer):
         choices=[
             (1, 'Definitely consume more'),
             (2, 'Consume more'),
-            (3, 'Neutral'),
+            (3, 'No change'),
             (4, 'Save more'),
             (5, 'Definitely save more'),
         ],
@@ -141,7 +142,7 @@ class Player(BasePlayer):
         choices=[
             (1, 'Definitely consume more'),
             (2, 'Consume more'),
-            (3, 'Neutral'),
+            (3, 'No change'),
             (4, 'Save more'),
             (5, 'Definitely save more'),
         ], 
@@ -154,7 +155,7 @@ class Player(BasePlayer):
         choices=[
             (1, 'Definitely discourage'),
             (2, 'Discourage'),
-            (3, 'Neutral'),
+            (3, 'No change'),
             (4, 'Encourage'),
             (5, 'Definitely encourage')
         ],
@@ -167,7 +168,7 @@ class Player(BasePlayer):
         choices=[
             (1, 'Definitely rely more'),
             (2, 'Rely more'),
-            (3, 'Neutral'),
+            (3, 'No change'),
             (4, 'Rely less'),
             (5, 'Definitely rely less'),
         ],
@@ -178,11 +179,11 @@ class Player(BasePlayer):
     survey_tax_rates_1 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'very unlikely',),
-            (2, 'unlikely'),
-            (3, 'neutral'),
-            (4, 'likely'),
-            (5, 'very likely'),
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'No change'),
+            (4, 'Likely'),
+            (5, 'Very likely'),
             ],
         label='<p>The above table shows the US personal income tax schedule for a single filer in 2023. What do you this the probability is that the US personal income tax rate schedule will substantially change...</p><p><b>...in the next 3 months?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -191,11 +192,11 @@ class Player(BasePlayer):
     survey_tax_rates_2 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'very unlikely',),
-            (2, 'unlikely'),
-            (3, 'neutral'),
-            (4, 'likely'),
-            (5, 'very likely'),
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'No change'),
+            (4, 'Likely'),
+            (5, 'Very likely'),
             ],
         label='<p><b>...in the next 6 months?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -204,11 +205,11 @@ class Player(BasePlayer):
     survey_tax_rates_3 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'very unlikely',),
-            (2, 'unlikely'),
-            (3, 'neutral'),
-            (4, 'likely'),
-            (5, 'very likely'),
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'No change'),
+            (4, 'Likely'),
+            (5, 'Very likely'),
             ],
         label='<p><b>...in the next year?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -217,11 +218,11 @@ class Player(BasePlayer):
     survey_tax_rates_4 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'very unlikely',),
-            (2, 'unlikely'),
-            (3, 'neutral'),
-            (4, 'likely'),
-            (5, 'very likely'),
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'No change'),
+            (4, 'Likely'),
+            (5, 'Very likely'),
             ],
         label='<p><b>...in the next 5 years?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -230,11 +231,11 @@ class Player(BasePlayer):
     survey_tax_rates_5 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'very unlikely',),
-            (2, 'unlikely'),
-            (3, 'neutral'),
-            (4, 'likely'),
-            (5, 'very likely'),
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'No change'),
+            (4, 'Likely'),
+            (5, 'Very likely'),
             ],
         label='<p><b>...in the next 10 years?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -571,16 +572,31 @@ class Transition4(Page):
 
 class Survey(Page):
     form_model = 'player'
-    form_fields = ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax' ,'survey_wealth_tax_personal', 'survey_repatriation', 'survey_one_time_policies','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5']
+    form_fields = ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax','survey_wealth_tax_personal' ]
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax' ,'survey_wealth_tax_personal', 'survey_repatriation', 'survey_one_time_policies','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5']:
+            for field_name in ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax','survey_wealth_tax_personal' ]:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages
+        
+
+class Survey2(Page):
+    form_model = 'player'
+    form_fields = [ 'survey_repatriation', 'survey_one_time_policies','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5']
+
+    @staticmethod
+    def error_message(player, values):
+        if not player.session.config['development']:
+            error_messages = dict()
+            for field_name in ['survey_repatriation', 'survey_one_time_policies','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5']:
+                if values[field_name] is None:
+                    error_messages[field_name] = 'Please answer the question'
+            return error_messages
+
 
 
 
@@ -725,6 +741,7 @@ page_sequence = [
     Beliefs4,
     Transition4,
     Survey,
+    Survey2,
     Outcome,
     Feedback,
     Finished,

@@ -4,13 +4,13 @@ SESSION_CONFIGS = [
     dict(
         name='otfe',
         app_sequence=['otfe'],
-        num_demo_participants=1,
+        num_demo_participants=6,
         development=False
     ),
     dict(
         name='otfe_dev',
         app_sequence=['otfe'],
-        num_demo_participants=1,
+        num_demo_participants=6,
         development=True
     ),
 ]

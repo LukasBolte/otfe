@@ -8,6 +8,24 @@ Second work period
     <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
 {{ endif }}
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disable Text Selection</title>
+    
+    <style>
+      /* Disable text selection for the whole body */
+      body {
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+      }
+    </style>
+</head>
+
 <div id="transcriptionTask"></div>
 
 <input type="hidden" name="data_dummy" id="data_dummy"/>
@@ -40,6 +58,7 @@ Second work period
             successMessage: "The transcription was correct!",
             cacheUniqueID: "work_2" + "{{ participant_code }}", // Unique ID for the cache
             work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
+            blurLevel: "blur(4px)",
             varName: "data_dummy", // Variable name for the cache
             training: false,    
             // Array of objects for the entire Greek alphabet (lowercase)

@@ -227,20 +227,22 @@ function transcription(parameters) {
         if (this.training) {
             const nextButton = document.createElement('button');
             nextButton.innerText = "Next";
-            nextButton.className = "btn btn-primary btn-large"; // Add Bootstrap classes
+            nextButton.className = "btn btn-primary btn-large otree-btn-next"; // Add Bootstrap classes
             nextButton.style.float = "right"; // Float to the right
             nextButton.disabled = this.correctAttempts === 0; // Disable initially
 
             nextButton.onclick = () => {
                 this.loadBlurryTextFromCurrentRow(); // Load the next row when clicked
+                document.getElementById("myNextID").click(); // Click the hidden "Next" button
+                
             };
 
             const nextButtonContainer = document.createElement('div');
             // Add the "Next" button to the container
-            nextButtonContainer.appendChild(nextButton);
+            // nextButtonContainer.appendChild(nextButton);
             
             // Insert the container as a sibling after the existing element
-            document.getElementById(this.root).appendChild(nextButtonContainer); // Correctly insert after the container
+            document.getElementById(this.root).appendChild(nextButton); // Correctly insert after the container
 
             // container.appendChild(nextButtonContainer); // Add the "Next" button container
         }

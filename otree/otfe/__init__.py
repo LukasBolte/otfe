@@ -19,9 +19,18 @@ class C(BaseConstants):
     AVG_TOTAL_PAYMENT = "$16"
     PARTICIPATION_FEE = 5
     ROW_PAYMENT = 25
+    MAX_MISTAKES = 50
     BELIEF_BONUS = 1
+    TAX_RATES = {
+            'C-Info': [.25,.25,.25],
+            'C-NoInfo': [.25,.25,.25],
+            'T1-T-Info': [.5,.25,.25],
+            'T1-T-NoInfo': [.5,.25,.25],
+            'T1-P': [.5,.5,.5],
+            'T2-T': [.75,.25,.25]
+        }
 
-    WORK_PERIOD_LENGTH = 1 # change to 10 for real experiment
+    WORK_PERIOD_LENGTH = 2 # change to 10 for real experiment
 
     INSTRUCTIONS_BELIEFS = 'otfe/Review-instructionsBeliefs.html'
     INSTRUCTIONS = 'otfe/Review-instructions.html'
@@ -181,9 +190,8 @@ class Player(BasePlayer):
         choices=[
             (1, 'Very unlikely',),
             (2, 'Unlikely'),
-            (3, 'No change'),
-            (4, 'Likely'),
-            (5, 'Very likely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
             ],
         label='<p>The above table shows the US personal income tax schedule for a single filer in 2023. What do you this the probability is that the US personal income tax rate schedule will substantially change...</p><p><b>...in the next 3 months?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -194,9 +202,8 @@ class Player(BasePlayer):
         choices=[
             (1, 'Very unlikely',),
             (2, 'Unlikely'),
-            (3, 'No change'),
-            (4, 'Likely'),
-            (5, 'Very likely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
             ],
         label='<p><b>...in the next 6 months?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -207,9 +214,8 @@ class Player(BasePlayer):
         choices=[
             (1, 'Very unlikely',),
             (2, 'Unlikely'),
-            (3, 'No change'),
-            (4, 'Likely'),
-            (5, 'Very likely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
             ],
         label='<p><b>...in the next year?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -220,9 +226,8 @@ class Player(BasePlayer):
         choices=[
             (1, 'Very unlikely',),
             (2, 'Unlikely'),
-            (3, 'No change'),
-            (4, 'Likely'),
-            (5, 'Very likely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
             ],
         label='<p><b>...in the next 5 years?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -233,9 +238,8 @@ class Player(BasePlayer):
         choices=[
             (1, 'Very unlikely',),
             (2, 'Unlikely'),
-            (3, 'No change'),
-            (4, 'Likely'),
-            (5, 'Very likely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
             ],
         label='<p><b>...in the next 10 years?</b></p>',
         widget=widgets.RadioSelectHorizontal,
@@ -387,20 +391,25 @@ class EndOfWork1(Page):
 
         # 'C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'
 
-        if player.participant.treatment in ['C-Info','C-NoInfo']:  
-            tax_info = "Your tax rate is 25%. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
-        elif player.participant.treatment in ['T1-T-Info','T1-T-NoInfo']:
-            tax_info = "The tax rate for Work Period 1 was changed to a final tax rate of 50%. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
-        elif player.participant.treatment == 'T1-P':
-            tax_info = "Your tax rate has been permanently changed to 50%. This new tax rate applies to earnings from the last work period and to future earnings. It will not change."
-        elif player.participant.treatment == 'T2-T':
-            tax_info = "The tax rate for Work Period 1 was changed to a final tax rate of 75%. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+    
 
+        if player.participant.treatment in ['C-Info','C-NoInfo']:  
+            tax_info = "<b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+        elif player.participant.treatment in ['T1-T-Info','T1-T-NoInfo']:
+            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 50%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+        elif player.participant.treatment == 'T1-P':
+            tax_info = "<b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change."
+        elif player.participant.treatment == 'T2-T':
+            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+
+        tax_rate = C.TAX_RATES[player.participant.treatment][0] 
+        net_earnings = initial_gross_earnings*(1-tax_rate)
 
         return {
             'correct_attempts': correct_attempts,
             'initial_gross_earnings': initial_gross_earnings,   
             'tax_info': tax_info,
+            'net_earnings': net_earnings
         }
     
 
@@ -474,16 +483,19 @@ class EndOfWork2(Page):
         # 'C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'
 
         if player.participant.treatment in ['C-Info','C-NoInfo','T1-T-Info','T1-T-NoInfo', 'T2-T']:  
-            tax_info = "Your tax rate is 25%. This tax rate is imposed on your earnings <b>only</b> for the last work period. Your default tax rate for future work periods is still 25%." 
+            tax_info = "<b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings <b>only</b> for the last work period. Your default tax rate for future work periods is still 25%." 
         elif player.participant.treatment == 'T1-P':
-            tax_info = "Your tax rate is 50%. This tax rate is imposed on your earnings for the last work period as well as for future earnings."
+            tax_info = "<b>Your tax rate is 50%</b>. This tax rate is imposed on your earnings for the last work period as well as for future earnings."
        
 
+        tax_rate = C.TAX_RATES[player.participant.treatment][1] 
+        net_earnings = initial_gross_earnings*(1-tax_rate)
 
         return {
             'correct_attempts': correct_attempts,
             'initial_gross_earnings': initial_gross_earnings,   
             'tax_info': tax_info,
+            'net_earnings': net_earnings
         }
 
 
@@ -536,15 +548,19 @@ class EndOfWork3(Page):
         # 'C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'
 
         if player.participant.treatment in ['C-Info','C-NoInfo','T1-T-Info','T1-T-NoInfo', 'T2-T']:  
-            tax_info = "Your tax rate is 25%. This tax rate is imposed on your earnings <b>only</b> for the last work period. Your default tax rate for future work periods is still 25%." 
+            tax_info = "<b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings <b>only</b> for the last work period. Your default tax rate for future work periods is still 25%." 
         elif player.participant.treatment == 'T1-P':
-            tax_info = "Your tax rate is 50%. This tax rate is imposed on your earnings for the last work period as well as for future earnings."
+            tax_info = "<b>Your tax rate is 50%</b>. This tax rate is imposed on your earnings for the last work period as well as for future earnings."
 
+
+        tax_rate = C.TAX_RATES[player.participant.treatment][2] 
+        net_earnings = initial_gross_earnings*(1-tax_rate)
 
         return {
             'correct_attempts': correct_attempts,
             'initial_gross_earnings': initial_gross_earnings,   
             'tax_info': tax_info,
+            'net_earnings': net_earnings
         }
 
 

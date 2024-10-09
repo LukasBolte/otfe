@@ -52,13 +52,13 @@ Third work period
             csvFile: "{% static 'html/letters.csv' %}", // The path to the CSV file
             paymentPerSuccess: "25",
             startingRowIndex: 120, // Starting from the third row (index 2)
-            maxMistakes: 2, // Maximum number of mistakes allowed
+            maxMistakes: {{ C.MAX_MISTAKES }}, // Maximum number of mistakes allowed    
             submitCooldown: 10,
             mistakeMessage: 'Unfortunately, the transcription had too many mistakes to be accepted.',
             successMessage: "The transcription was correct!",
             cacheUniqueID: "work_2" + "{{ participant_code }}", // Unique ID for the cache
             work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
-            blurLevel: "blur(4px)",
+            blurLevel: "blur(3px)",
             varName: "data_dummy", // Variable name for the cache
             training: false,    
             // Array of objects for the entire Greek alphabet (lowercase)
@@ -67,8 +67,9 @@ Third work period
                 { char: "ζ" }, { char: "η" }, { char: "θ" }, { char: "ι" }, { char: "κ" },
                 { char: "λ" }, { char: "μ" }, { char: "ν" }, { char: "ξ" }, { char: "ο" },
                 { char: "π" }, { char: "ρ" }, { char: "σ" }, { char: "τ" }, { char: "υ" },
-                { char: "φ" }, { char: "χ" }, { char: "ψ" }, { char: "ω" }, { char: "•" }  
-            ]   
+                { char: "φ" }, { char: "χ" }, { char: "ψ" }, { char: "ω" }, { char: "." }, 
+                { char: "," }  
+            ]    
         });
     </script>
 

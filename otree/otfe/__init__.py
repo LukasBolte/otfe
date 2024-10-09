@@ -150,9 +150,9 @@ class Player(BasePlayer):
         blank=True,
         choices=[
             (1, 'Definitely spend more'),
-            (2, 'Spend/consume more'),
+            (2, 'Spend more'),
             (3, 'No change'),
-            (4, 'Spend/consume less'),
+            (4, 'Spend= less'),
             (5, 'Definitely spend less'),
         ],
         label="<p>If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to increase or reduce the amount you normally <I>spend/consume out of your existing savings/wealth?</i></b></p>",
@@ -168,7 +168,7 @@ class Player(BasePlayer):
             (4, 'Save less'),
             (5, 'Definitely save less'),
         ], 
-        label = "<p><b>How would your <i>savings out of income</i? change if you were personally affected by such a one-time wealth tax?</b></p>",
+        label = "<p><b>How would your <i>savings out of income</i> change if you were personally affected by such a one-time wealth tax?</b></p>",
         widget=widgets.RadioSelectHorizontal,
     )
     
@@ -181,7 +181,7 @@ class Player(BasePlayer):
             (4, 'Spend less'),
             (5, 'Definitely spend less'),
         ], 
-        label = "<p><b>How would your spending out of <i>existing wealth</i> change if you were personally affected by such a one-time wealth tax?</b></p>",
+        label = "<p><b>How would your <i>spending out of existing wealth</i> change if you were personally affected by such a one-time wealth tax?</b></p>",
         widget=widgets.RadioSelectHorizontal,
     )  
     

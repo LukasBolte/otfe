@@ -155,7 +155,7 @@ class Player(BasePlayer):
             (4, 'Spend/consume less'),
             (5, 'Definitely spend/consume less'),
         ],
-        label="<p>If your government had implemented one of these one-time wealth taxes in the past, <b>would knowledge of this event lead you to increase or reduce the amount you normally spend/consume out of your existing wealth?</b></p>",
+        label="<p><b>If your government had implemented one of these one-time wealth taxes in the past, <b>would knowledge of this event lead you to increase or reduce the amount you normally spend/consume out of your existing wealth?</b></p>",
         widget=widgets.RadioSelectHorizontal,
     )
 

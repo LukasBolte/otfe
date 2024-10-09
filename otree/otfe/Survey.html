@@ -34,12 +34,14 @@ Survey
         <b>Question 3</b>
     </p>
     
-    {{ formfield 'survey_wealth_tax' }}
+    {{ formfield 'survey_wealth_tax_savings' }}
     
+    {{ formfield 'survey_wealth_tax_consumption' }}
 
-    {{ formfield 'survey_wealth_tax_personal' }}
+    {{ formfield 'survey_wealth_tax_personal_savings' }}
+
+    {{ formfield 'survey_wealth_tax_personal_consumption' }}
     
-
 <button style="float: right" class="otree-btn-next btn btn-primary">Submit</button>
 
 {% endblock %}

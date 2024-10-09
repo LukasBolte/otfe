@@ -614,13 +614,13 @@ class Transition4(Page):
 
 class Survey(Page):
     form_model = 'player'
-    form_fields = ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax','survey_wealth_tax_personal' ]
+    form_fields = ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings', 'survey_wealth_tax_personal_savings','survey_wealth_tax_personal_consumption']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax','survey_wealth_tax_personal' ]:
+            for field_name in ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings', 'survey_wealth_tax_personal_savings','survey_wealth_tax_personal_consumption']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages

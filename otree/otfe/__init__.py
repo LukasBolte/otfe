@@ -133,32 +133,58 @@ class Player(BasePlayer):
         widget=widgets.RadioSelectHorizontal,
     )
 
-    survey_wealth_tax = models.IntegerField(
+    survey_wealth_tax_savings = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Definitely consume more'),
-            (2, 'Consume more'),
+            (1, 'Definitely save more'),
+            (2, 'Save more'),
             (3, 'No change'),
-            (4, 'Save more'),
-            (5, 'Definitely save more'),
+            (4, 'Save less'),
+            (5, 'Definitely save less'),
         ],
-        label="<p>Some countries have implemented one-time wealth taxes—taxes on real and/or financial assets that only apply for a single year.</p><p>For example, in 2013, the government of Cyprus decided to tax all domestic bank account deposits only a single time at a rate up to 9.9%.</p><p>As another example, during the Coronavirus pandemic, the government of Argentina decided to tax high-wealth individuals a one-time rate of 3.5% of their assessed wealth.</p><p>If your government had implemented one of these one-time wealth taxes in the past, <b>would knowledge of this event lead you to increase or reduce the amount you normally save or even consume some of your wealth?</b></p>",
+        label="<p>Some countries have implemented one-time wealth taxes—taxes on real and/or financial assets that only apply for a single year.</p><p>For example, in 2013, the government of Cyprus decided to tax all domestic bank account deposits only a single time at a rate up to 9.9%.</p><p>As another example, during the Coronavirus pandemic, the government of Argentina decided to tax high-wealth individuals a one-time rate of 3.5% of their assessed wealth.</p><p>If your government had implemented one of these one-time wealth taxes in the past, <b>would knowledge of this event lead you to increase or reduce the amount you normally save out of your income?</b></p>",
         widget=widgets.RadioSelectHorizontal,
     )
 
-    survey_wealth_tax_personal = models.IntegerField(
+    survey_wealth_tax_consumption = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Definitely consume more'),
-            (2, 'Consume more'),
+            (1, 'Definitely spend/consume more'),
+            (2, 'Spend/consume more'),
             (3, 'No change'),
-            (4, 'Save more'),
-            (5, 'Definitely save more'),
-        ], 
-        label = "<b>What about if you were personally affected by such a one-time wealth tax?</b>",
+            (4, 'Spend/consume less'),
+            (5, 'Definitely spend/consume less'),
+        ],
+        label="<p>If your government had implemented one of these one-time wealth taxes in the past, <b>would knowledge of this event lead you to increase or reduce the amount you normally spend/consume out of your existing wealth?</b></p>",
         widget=widgets.RadioSelectHorizontal,
     )
 
+    survey_wealth_tax_personal_savings = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Definitely save more'),
+            (2, 'Save more'),
+            (3, 'No change'),
+            (4, 'Save less'),
+            (5, 'Definitely save less'),
+        ], 
+        label = "<p><b>How would your savings out of income change if you were personally affected by such a one-time wealth tax?</b></p>",
+        widget=widgets.RadioSelectHorizontal,
+    )
+    
+    survey_wealth_tax_personal_consumption = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Definitely spend/consume more'),
+            (2, 'Spend/consume more'),
+            (3, 'No change'),
+            (4, 'Spend/consume less'),
+            (5, 'Definitely spend/consume less'),
+        ], 
+        label = "<p><b>How would your spending/consumption out of your existing wealth change if you were personally affected by such a one-time wealth tax?</b></p>",
+        widget=widgets.RadioSelectHorizontal,
+    )  
+    
     survey_repatriation = models.IntegerField(
         blank=True,
         choices=[

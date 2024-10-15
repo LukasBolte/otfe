@@ -424,7 +424,7 @@ class EndOfWork1(Page):
         elif player.participant.treatment in ['T1-T-Info','T1-T-NoInfo']:
             tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 50%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
         elif player.participant.treatment == 'T1-P':
-            tax_info = "<b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change."
+            tax_info = "<b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change from 50%."
         elif player.participant.treatment == 'T2-T':
             tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
 

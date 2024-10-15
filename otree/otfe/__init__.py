@@ -152,7 +152,7 @@ class Player(BasePlayer):
             (1, 'Definitely spend more'),
             (2, 'Spend more'),
             (3, 'No change'),
-            (4, 'Spend= less'),
+            (4, 'Spend less'),
             (5, 'Definitely spend less'),
         ],
         label="<p>If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to increase or reduce the amount you normally <I>spend/consume out of your existing savings/wealth?</i></b></p>",

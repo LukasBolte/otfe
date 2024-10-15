@@ -219,7 +219,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='<p>The above table shows the US personal income tax schedule for a single filer in 2023. What do you think is the probability is that the US personal income tax rate schedule will substantially change...</p><p><b>...in the next 3 months?</b></p>',
+        label='<p>The above table shows the US personal income tax schedule for a single filer in 2023. <b>What do you think is the probability is that the US personal income tax rate schedule will substantially change...</b></p><p><b>...in the next 3 months?</b></p>',
         widget=widgets.RadioSelectHorizontal,
     )
 

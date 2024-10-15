@@ -116,7 +116,7 @@ class Player(BasePlayer):
             (4, 'More willing'),
             (5, 'Definitely more willing'),
         ],
-        label="The Biden administration in the US has attempted to eliminate student debt among those with outstanding student loan debt. Assuming that the administration's efforts had been successful, would knowledge of this hypothetical past event make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?",
+        label="The Biden administration in the US has attempted to eliminate student debt among those with outstanding student loan debt. Assuming that the administration's efforts had been successful, <b>would knowledge of this hypothetical past event make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?</b>",
         widget=widgets.RadioSelectHorizontal,
     )
 

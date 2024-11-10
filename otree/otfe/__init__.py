@@ -19,7 +19,7 @@ class C(BaseConstants):
     AVG_TOTAL_PAYMENT = "$16"
     PARTICIPATION_FEE = 5
     ROW_PAYMENT = 25
-    MAX_MISTAKES = 50
+    MAX_MISTAKES = 2
     BELIEF_BONUS = 1
     TAX_RATES = {
             'C-Info': [.25,.25,.25],
@@ -120,7 +120,7 @@ class Player(BasePlayer):
             (4, 'More willing'),
             (5, 'Definitely more willing'),
         ],
-        label="The Biden administration in the US has attempted to eliminate student debt among those with outstanding student loan debt. Assuming that the administration's efforts had been successful, <b>would knowledge of this hypothetical past event make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?</b>",
+        label="Some administrations in the US have attempted to eliminate student debt among those with outstanding student loan debt. Assuming that such efforts had been successful, <b>would knowledge of this make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?</b>",
         widget=widgets.RadioSelectHorizontal,
     )
 

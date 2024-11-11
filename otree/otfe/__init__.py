@@ -19,7 +19,7 @@ class C(BaseConstants):
     AVG_TOTAL_PAYMENT = "$16"
     PARTICIPATION_FEE = 5
     ROW_PAYMENT = 25
-    MAX_MISTAKES = 50
+    MAX_MISTAKES = 2
     BELIEF_BONUS = 1
     TAX_RATES = {
             'C-Info': [.25,.25,.25],
@@ -57,7 +57,7 @@ def creating_session(subsession: Subsession):
 
             p.participant.cq_1_mistakes = 0
             p.participant.cq_2_mistakes = 0
-            p.participant.which_belief = random.choice([1,2,3])
+            p.participant.which_belief = random.choice(["1","2","3","1_2","1_3","2_3"])
 
 
 
@@ -83,6 +83,10 @@ class Player(BasePlayer):
     beliefs2 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
     beliefs3 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
     beliefs4 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
+
+    beliefs1_2 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
+    beliefs1_3 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
+    beliefs2_3 = models.IntegerField(min=0, max=100, label='<b>Expected tax rate (%, between 0 and 100):</b>')
 
     cq_1 = models.IntegerField(blank=True,
         choices=[
@@ -116,7 +120,7 @@ class Player(BasePlayer):
             (4, 'More willing'),
             (5, 'Definitely more willing'),
         ],
-        label="The Biden administration in the US has attempted to eliminate student debt among those with outstanding student loan debt. Assuming that the administration's efforts had been successful, <b>would knowledge of this hypothetical past event make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?</b>",
+        label="Some administrations in the US have attempted to eliminate student debt among those with outstanding student loan debt. Assuming that such efforts had been successful, <b>would knowledge of this make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?</b>",
         widget=widgets.RadioSelectHorizontal,
     )
 
@@ -374,11 +378,13 @@ class InstructionsBeliefs(Page):
 
 class Beliefs1(Page):
     form_model = 'player'
-    form_fields = ['beliefs1']
+    form_fields = ['beliefs1','beliefs1_2','beliefs1_3']
     
     @staticmethod
     def before_next_page(player, timeout_happened):
         player.participant.beliefs1 = player.beliefs1
+        player.participant.beliefs1_2 = player.beliefs1_2
+        player.participant.beliefs1_3 = player.beliefs1_3
 
 
 class Transition1(Page):
@@ -463,11 +469,12 @@ class TaxInfo1(Page):
 
 class Beliefs2(Page):
     form_model = 'player'
-    form_fields = ['beliefs2']
+    form_fields = ['beliefs2','beliefs2_3']
 
     @staticmethod
     def before_next_page(player, timeout_happened):
         player.participant.beliefs2 = player.beliefs2
+        player.participant.beliefs2_3 = player.beliefs2_3
 
 
 class Transition2(Page):
@@ -695,7 +702,16 @@ class Outcome(Page):
         participant_belief = int(getattr(player.participant, participant_belief))/100
 
         print(participant_belief)
-        correct_belief = correct_beliefs[player.participant.treatment][player.participant.which_belief-1]
+
+        belief_dict = {
+            "1": 0,
+            "2": 1,
+            "3": 2,
+            "1_2": 1,
+            "1_3": 2,
+            "2_3": 2
+        }
+        correct_belief = correct_beliefs[player.participant.treatment][belief_dict[player.participant.which_belief]]
 
         delta = 0.025
         belief_bonus = abs(correct_belief - participant_belief) < delta

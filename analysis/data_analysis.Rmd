@@ -1,0 +1,1526 @@
+---
+title: "OTFE"
+date: "November 2024"
+output:
+  html_document:
+    df_print: paged
+---
+
+This document has my R-code and its output. The R-code is needed, as far as I know, for the document to compile properly; you may skip it. 
+
+# Getting started: Importing the raw data and oading libraries. 
+
+```{r}
+# Set the working directory
+setwd("~/Documents/GitHub/otfe/analysis")
+
+library(tidyverse)
+library(purrr)
+library(jsonlite)
+library(extrafont)
+library(factoextra)
+library(GGally)
+
+csv_file <- "data/all_apps_wide-2024-11-13.csv"
+df <- read_csv(csv_file) 
+df <- df %>% filter(participant.finished == 1)
+
+# Define the folder name variable
+folder_name <- "output_2024-11-13"
+
+output_folder <- paste0("output/", folder_name)
+# Create the new folder in the working directory if it doesn't exist
+if (!dir.exists(output_folder)) {
+  dir.create(output_folder)
+}
+```
+
+```{r}
+# Plot duration
+df <- df %>%
+  mutate(
+    # Convert Duration..in.seconds. from string to numeric (seconds)
+    duration_seconds = participant.end_time - participant.start_time,
+    # Create duration_minutes by dividing duration_seconds by 60
+    duration_minutes = duration_seconds / 60
+  ) 
+
+# Print the average duration
+# Calculate the average of variable Y
+average_duration <- df %>%
+  summarise(average = mean(duration_minutes, na.rm = TRUE)) %>%  # Calculate the mean, ignoring NA values
+  pull(average)  # Extract the mean value
+
+# Print the average of Y
+print(average_duration)
+
+# Create the plot for duration_minutes and save it
+plot <- df %>%
+  ggplot(aes(x = duration_minutes)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Distribution of Duration in Minutes",
+       x = "Duration (minutes)",
+       y = "Frequency") +
+  theme_minimal()
+
+print(plot)
+# Save the plot to the specified folder
+ggsave(filename = file.path(output_folder, "duration_minutes_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+```
+
+
+```{r}
+
+# Print the average payment
+# Calculate the average of variable Y
+average_payoff <- df %>%
+  summarise(average = mean(participant.payoff, na.rm = TRUE)) %>%  # Calculate the mean, ignoring NA values
+  pull(average)  # Extract the mean value
+
+# Print the average of Y
+print(average_payoff)
+
+# Create the plot for duration_minutes and save it
+plot <- df %>%
+  ggplot(aes(x = participant.payoff)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Distribution of Payoff",
+       x = "Payoff ($)",
+       y = "Frequency") +
+  theme_minimal()
+
+print(plot)
+# Save the plot to the specified folder
+ggsave(filename = file.path(output_folder, "payoff_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+```
+```{r}
+# Define the levels in the order you want them to appear
+df$participant.treatment <- factor(df$participant.treatment, 
+                                   levels = c('C-Info', 'C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo', 'T1-P', 'T2-T'))
+
+# Create the bar chart
+plot <- ggplot(df, aes(x = participant.treatment)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(x = "Participant Treatment", y = "Frequency", title = "Frequency of Each Treatment Group") +
+  theme_minimal()
+
+
+print(plot)
+# Save the plot to the specified folder
+ggsave(filename = file.path(output_folder, "treatment_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+
+```
+
+
+```{r}
+
+# Parse the JSON in each row and create new columns for correctAttempts and incorrectAttempts
+json_columns <- c("participant.attempts_training", "participant.attempts_work_1", 
+                  "participant.attempts_work_2", "participant.attempts_work_3")
+prefixes <- c("training", "work_1", "work_2", "work_3")
+
+# Loop over the columns and prefixes
+for (i in seq_along(json_columns)) {
+  column <- json_columns[i]
+  prefix <- prefixes[i]
+  
+  # Parse JSON and create new columns for correctAttempts and incorrectAttempts with the specified prefix
+  df <- df %>%
+    mutate(parsed_json = map(!!sym(column), ~ fromJSON(.))) %>%
+    mutate(
+      !!paste0(prefix, "_correctAttempts") := map_int(parsed_json, "correctAttempts"),
+      !!paste0(prefix, "_incorrectAttempts") := map_int(parsed_json, "incorrectAttempts")
+    ) 
+}
+```
+
+```{r}
+'player.participant.cq_1_mistakes'
+```
+
+
+```{r}
+
+df <- df %>% 
+  unite('bad_bought', c('X4.1.6.Case.1A_6', 'X4.2.9.Case.1B_6', 'X4.3.13.Case.2A_6', 'X4.4.14.Case.2B_6'), sep='') %>%
+  unite('good_bought', c('X4.1.9.Case.1B_1', 'X4.2.6.Case.1A_1', 'X4.3.14.Case.2B_1', 'X4.4.13.Case.2A_1'), sep='') %>%
+  unite('bad_notbought', c('X4.1.13.Case.2A_6', 'X4.2.14.Case.2B_6', 'X4.3.6.Case.1A_6', 'X4.4.9.Case.1B_6'), sep='') %>%
+  unite('reasons', c('X4.1.16.Reasons', 'X4.2.16.Reasons','X4.3.16.Reasons','X4.4.16.Reasons'), sep='') %>% 
+  unite('good_notbought', c('X4.1.14.Case.2B_6', 'X4.2.13.Case.2A_6', 'X4.3.9.Case.1B_6', 'X4.4.6.Case.1A_6'), sep='') %>% 
+  mutate(across(c('bad_bought', 'good_bought', 'bad_notbought', 'good_notbought'), as.numeric))
+
+subset_df <- df %>% select(
+  bad_bought,
+  good_bought,
+  bad_notbought,
+  good_notbought,
+  reasons
+)
+
+output_file <- file.path(folder_name, "store_owner.csv")
+
+# Save the subset data frame to a CSV file
+write.csv(subset_df, file = output_file, row.names = FALSE)
+
+```
+
+## Plot store owner data
+
+We now plot the store owner data including all participants. Higher values mean "Prefer to know."
+
+```{r}
+# Define the columns you want to plot histograms for
+columns_to_plot <- c("bad_bought", "good_bought", "bad_notbought", "good_notbought")  # Replace with your column names
+# Function to create and save histogram for a given column
+plot_and_save_histogram <- function(column_name) {
+  # Dynamically create the plot for each column
+  plot <- df %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+    labs(title = paste("Distribution of", column_name),
+         x = column_name,
+         y = "Frequency") +
+    theme_minimal()
+  
+  print(plot)
+  # Save the plot to the specified folder with dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, "_distribution.png")),
+         plot = plot,
+         width = 8, height = 6)
+}
+
+# Loop through each column and create/save histograms
+walk(columns_to_plot, plot_and_save_histogram)
+```
+
+# Profiles data---Open field
+
+We look at the profiles data, beginning with the open field participants filled in. 
+
+## Manipulate
+
+Notice that the output is coded as the value of information, i.e., positive numbers correspond to a desire to reveal the information.
+
+```{r}
+# Loop through each value of y from 1 to 8
+for (y in 1:8) {
+  # Construct the column names dynamically
+  elicitation_col <- paste0("X", y, "_Q9.2.Elicitation")
+  reveal_col <- paste0("X", y, "_9.4.Reveal")
+  hide_col <- paste0("X", y, "_9.7.Hide")
+  profile_col <- paste0("Profile_", y)
+  
+  # Apply the logic row-wise to create the new 'Profile_y' column using dplyr
+  df <- df %>%
+    mutate(!!profile_col := case_when(
+      !!sym(elicitation_col) == "Continue to hide the final price" ~ -as.numeric(!!sym(hide_col)),
+      !!sym(elicitation_col) == "Reveal the final price" ~ as.numeric(!!sym(reveal_col)),
+      !!sym(elicitation_col) == "Indifferent between revealing and hiding" ~ 0,
+      TRUE ~ NA  # Default case if no match
+    ))
+}
+```
+
+## The profiles 
+
+- **Profile 1:**
+  - Value to Customer: $51
+  - Cost: $50
+  - Possible surcharge: $10
+  - Chance of surcharge: 10%
+  - Did they buy? Yes
+- **Profile 2:**
+  - Value to Customer: $51
+  - Cost: $50
+  - Possible surcharge: $10
+  - Chance of surcharge: 10%
+  - Did they buy? No
+- **Profile 3:**
+  - Value to Customer: $51
+  - Cost: $50
+  - Possible surcharge: $30
+  - Chance of surcharge: 10%
+  - Did they buy? No
+- **Profile 4:**
+  - Value to Customer: $53
+  - Cost: $50
+  - Possible surcharge: $10
+  - Chance of surcharge: 10%
+  - Did they buy? Yes
+- **Profile 5:**
+  - Value to Customer: $53
+  - Cost: $50
+  - Possible surcharge: $30
+  - Chance of surcharge: 10%
+  - Did they buy? Yes
+- **Profile 6:**
+  - Value to Customer: $53
+  - Cost: $50
+  - Possible surcharge: $30
+  - Chance of surcharge: 10%
+  - Did they buy? No
+- **Profile 7:**
+  - Value to Customer: $62
+  - Cost: $50
+  - Possible surcharge: $10
+  - Chance of surcharge: 10%
+  - Did they buy? Yes
+- **Profile 8:**
+  - Value to Customer: $62
+  - Cost: $50
+  - Possible surcharge: $30
+  - Chance of surcharge: 10%
+  - Did they buy? Yes
+
+## Plot profile data
+
+We now plot the value of providing information still including all participants. We reduce values above to 10 to 10 and increase values below -10 to -10 to make the graph more visible.
+
+```{r}
+# Define a function to clip values to a specified range
+clip_values <- function(values, min_val, max_val) {
+  pmin(pmax(values, min_val), max_val)
+}
+
+# Define the function to plot and save the histogram
+plot_and_save_histogram_profiles <- function(column_name, folder_name, min_val, max_val, name, binwidth = 1) {
+  # Clip values in the specified column to the given range
+  df[[column_name]] <- clip_values(df[[column_name]], min_val, max_val)
+  
+  # Dynamically create the plot for each column
+  plot <- df %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_histogram(binwidth = binwidth, fill = "blue", color = "black") +
+    scale_x_continuous(limits = c(min_val - 0.5, max_val + 0.5)) +  # Set the x-axis limits based on the range
+    labs(title = paste("Distribution of", column_name),
+         x = column_name,
+         y = "Frequency") +
+    theme_minimal()
+  
+  print(plot)
+  
+  # Save the plot to the specified folder with a dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, name)),
+         plot = plot,
+         width = 8, height = 6)
+}
+
+# Define the folder name where plots will be saved
+
+min_val <- -10
+max_val <- 10 
+name <- "_distribution.png"
+
+# Loop through each profile column from Profile_1 to Profile_8
+for (y in 1:8) {
+  profile_col <- paste0("Profile_", y)
+  plot_and_save_histogram_profiles(profile_col, folder_name, min_val, max_val, name, binwidth = 0.05)
+}
+```
+
+
+
+# Feedback 
+
+Here, we consider the feedback participants provide. 
+
+## Produce a feedback file to assess. 
+```{r}
+df <- df %>% 
+  rename(
+    videos_helpful = Q317_1,
+    videos_amount_watched = Q318,
+    clear = X12.1.Feedback_1,
+    understanding = X12.1.Feedback_2,
+    satisfied = X12.1.Feedback_3,
+    pay = X12.1.Feedback_4,
+    comments = X12.2.Comments
+  )
+
+subset_df <- df %>% select(
+  videos_helpful,
+  videos_amount_watched,
+  clear,
+  understanding,
+  satisfied,
+  pay,
+  comments
+)
+
+output_file <- file.path(folder_name, "feedback.csv")
+
+# Save the subset data frame to a CSV file
+write.csv(subset_df, file = output_file, row.names = FALSE)
+
+```
+
+## Plot feedback
+
+We plot the quantitative feedback participants provided. 
+```{r}
+
+variables_to_plot <- c(
+  "videos_helpful",
+  "clear",
+  "understanding",
+  "satisfied",
+  "pay"
+)
+
+df <- df %>%
+  mutate(across(all_of(variables_to_plot), ~ as.numeric(as.character(.))))
+
+
+walk(variables_to_plot, plot_and_save_histogram)
+
+
+# Define the desired order of categories
+category_order <- c("Never", "Fewer than half the times", "About half the times", 
+                    "More than half the times", "Always")
+
+# Ensure 'videos_amount_watched' is a factor with specified levels
+df <- df %>%
+  mutate(videos_amount_watched = factor(videos_amount_watched, levels = category_order))
+
+# Define function to plot and save frequencies
+plot_and_save_frequencies <- function(column_name) {
+  # Create the bar plot
+  plot <- df %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_bar(fill = "blue", color = "black") +
+    labs(title = paste("Frequency of", column_name),
+         x = column_name,
+         y = "Frequency") +
+    theme_minimal() +
+    scale_x_discrete(limits = category_order) # Ensure the x-axis categories are in the desired order
+  
+  print(plot)
+  # Save the plot to the specified folder with dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, "_frequencies.png")),
+         plot = plot,
+         width = 8, height = 6)
+}
+
+# Plot the frequencies for 'videos_amount_watched'
+plot_and_save_frequencies("videos_amount_watched")
+```
+
+## Plot feedback by video-watching 
+
+```{r}
+
+plot_and_save_histogram_df <- function(df,file_name,column_name, title_add) {
+  # Dynamically create the plot for each column
+  plot <- df %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+    labs(title = paste("Distribution of", column_name, title_add),
+         x = column_name,
+         y = "Frequency") +
+    theme_minimal()
+  
+  print(plot)
+  # Save the plot to the specified folder with dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, file_name)),
+         plot = plot,
+         width = 8, height = 6)
+}
+
+# Subset where "videos_amount_watched" equals "Always"
+df_videos_always <- df %>%
+  filter(videos_amount_watched == "Always")
+
+# Subset where "videos_amount_watched" does not equal "Always"
+df_videos_not_always <- df %>%
+  filter(videos_amount_watched != "Always")
+
+
+
+# Define the columns you want to plot
+columns_to_plot <- c("videos_helpful", "clear", "understanding", "satisfied", "pay")
+
+for (column_name in columns_to_plot) {
+  plot_and_save_histogram_df(
+    df = df_videos_not_always,
+    file_name = "_distribution_restricted_watched_not_always.png",
+    column_name = column_name,
+    title_add = ' not always watched'
+  )
+  plot_and_save_histogram_df(
+    df = df_videos_always,
+    file_name = "_distribution_restricted_watched_always.png",
+    column_name = column_name,
+    title_add = ' always watched'
+  )
+}
+```
+
+# Agree-disagree statements 
+
+We now plot the distributions of the agree-disagree statements, still including all participants. 
+
+The statements are: 
+
+- What you don’t know can’t hurt you.
+- I sometimes tell white lies to protect others’ feelings.
+- Ignorance is bliss.
+- I would never want to live a lie, even if it made me happy.
+- Truth is beauty.
+- Rather than love, than money, than fame, give me truth---Henry David Thoreau
+- Peace if possible, truth at all costs---Martin Luther
+
+```{r}
+
+variables_to_plot <-  c(
+  "agree_dont_know_cant_hurt", 
+  "agree_white_lies_good", 
+  "agree_ignorance_is_bliss", 
+  "agree_never_live_lie", 
+  "agree_truth_is_beauty",
+  "agree_give_me_truth", 
+  "agree_truth_at_all_cost" 
+)
+
+df <- df %>% 
+  rename(
+    agree_dont_know_cant_hurt = X11.1.Opinion_1,
+    agree_white_lies_good = X11.1.Opinion_2,
+    agree_ignorance_is_bliss = X11.1.Opinion_6,
+    agree_never_live_lie = X11.1.Opinion_7,
+    agree_truth_is_beauty = X11.1.Opinion_8,
+    agree_give_me_truth = X11.1.Opinion_9,
+    agree_truth_at_all_cost = X11.1.Opinion_11,
+  ) %>%
+  mutate(across(all_of(variables_to_plot), ~ as.numeric(as.character(.))))
+
+
+walk(variables_to_plot, plot_and_save_histogram)
+```
+
+# Profile data---MPL
+
+## Manipulate
+
+There are four randomizations: the MPL columns may be switched and the rows may be switched. This chunk of code transform V2--V3 into the format of V1. 
+
+```{r}
+# Define the transformation function
+transform_values <- function(x) {
+  x <- as.character(x)
+  x[x == "1"] <- "temp"   # Temporarily replace "1" with a placeholder
+  x[x == "3"] <- "1"      # Replace "3" with "1"
+  x[x == "temp"] <- "3"   # Replace the placeholder "temp" with "3"
+  return(x)
+}
+
+# Loop over `i` from 1 to 8 and `r` from 1 to 15
+for (i in 1:8) {
+  for (r in 1:15) {
+    # Construct the column names
+    col_name_v2 <- paste0("X", i, "_9.12.MPL.V2_", r)
+    col_name_v3 <- paste0("X", i, "_9.14.MPL.V3_", r)
+    
+    # Check if the columns exist in the data frame
+    if (col_name_v2 %in% colnames(df)) {
+      df[[col_name_v2]] <- transform_values(df[[col_name_v2]])
+    }
+    if (col_name_v3 %in% colnames(df)) {
+      df[[col_name_v3]] <- transform_values(df[[col_name_v3]])
+    }
+  }
+}
+
+# Loop over `i` from 1 to 8 and `r` from 1 to 15
+for (i in 1:8) {
+  for (r in 1:7) {
+    # Construct the column names
+    col_name_v3 <- paste0("X", i, "_9.14.MPL.V3_", r)
+    col_name_v4 <- paste0("X", i, "_9.16.MPL.V4_", r)
+    
+    col_name_v3_flipped <- paste0("X", i, "_9.14.MPL.V3_", 16-r)
+    col_name_v4_flipped <- paste0("X", i, "_9.16.MPL.V4_", 16-r)
+    # Check if the columns exist in the data frame
+    
+    temp <- df[[col_name_v3]] 
+    df[[col_name_v3]] <- df[[col_name_v3_flipped]]
+    df[[col_name_v3_flipped]] <- temp
+
+    temp <- df[[col_name_v4]] 
+    df[[col_name_v4]] <- df[[col_name_v4_flipped]]
+    df[[col_name_v4_flipped]] <- temp
+    
+  }
+}
+
+# Loop through profiles (i) and rows (r)
+for (i in 1:8) {
+  for (r in 1:15) {
+    # Generate the original column names dynamically
+    col_name_v1 <- paste0("X", i, "_9.10.MPL.V1_", r)
+    col_name_v2 <- paste0("X", i, "_9.12.MPL.V2_", r)
+    col_name_v3 <- paste0("X", i, "_9.14.MPL.V3_", r)
+    col_name_v4 <- paste0("X", i, "_9.16.MPL.V4_", r)
+    
+    # Construct the new column name dynamically
+    new_col_name <- paste0("Profile_", i, "_MPL_row_", r)
+    
+    # Unite the columns into a new column if all columns exist
+    df <- df %>% 
+      unite(!!new_col_name, c(col_name_v1, col_name_v2, col_name_v3, col_name_v4), sep = '', remove = FALSE)
+  }
+}
+```
+
+## Monotonicity
+
+We next assess the monotonicity of MPL answers. We print four numbers. First, the share of participants who have always weakly monotone answers. Second, the share of participants who have always strictly monotone answers. Third, the share of (profile, participant)-pairs with monotone answers. Fourth, the share of (profile, participant)-pairs with strictly monotone answers. 
+
+```{r}
+
+# Loop through profiles (i) and rows (r)
+for (i in 1:8) {
+  for (r in 1:15) {
+    # Generate the original column names dynamically
+    col_name_v1 <- paste0("X", i, "_9.10.MPL.V1_", r)
+    col_name_v2 <- paste0("X", i, "_9.12.MPL.V2_", r)
+    col_name_v3 <- paste0("X", i, "_9.14.MPL.V3_", r)
+    col_name_v4 <- paste0("X", i, "_9.16.MPL.V4_", r)
+    
+    # Construct the new column name dynamically
+    new_col_name <- paste0("Profile_", i, "_MPL_row_", r)
+    
+    # Unite the columns into a new column if all columns exist
+    df <- df %>% 
+      unite(!!new_col_name, c(col_name_v1, col_name_v2, col_name_v3, col_name_v4), sep = '', remove = FALSE)
+  }
+}
+# Loop through each profile (i)
+for (i in 1:8) {
+  
+  # Create vectors to store results
+  monotone_result <- logical(nrow(df)) 
+  strict_monotone_result <- logical(nrow(df)) 
+  
+  # Loop through each row in the dataframe
+  for (j in 1:nrow(df)) {
+    
+    # Create vectors to store row values
+    row_values <- numeric(15) # Numeric vector for monotonicity check
+    row_values_raw <- character(15) # Character vector for counting "2"
+    
+    # Collect row values
+    for (r in 1:15) {
+      col_name <- paste0("Profile_", i, "_MPL_row_", r)
+      
+      # Convert values to character for counting "2" and numeric for monotonicity check
+      row_values_raw[r] <- as.character(df[[col_name]][j])
+      row_values[r] <- as.numeric(row_values_raw[r])
+    }
+    
+    # Check if the sequence is monotonically decreasing
+    is_monotone <- all(diff(row_values) <= 0)
+    
+    # Check if "2" appears at most once
+    count_2 <- sum(row_values_raw == "2")
+    has_one_or_zero_2 <- count_2 <= 1
+    
+    # Store results in the vectors
+    monotone_result[j] <- is_monotone
+    strict_monotone_result[j] <- is_monotone && has_one_or_zero_2
+  }
+  
+  # Create new columns in df
+  monotone_col_name <- paste0("Profile_", i, "_monotone")
+  strict_monotone_col_name <- paste0("Profile_", i, "_strict_monotone")
+  df[[monotone_col_name]] <- monotone_result
+  df[[strict_monotone_col_name]] <- strict_monotone_result
+}
+
+# Create the 'Monotone' column based on the results of all Profile_i_monotone columns
+df$Monotone <- rowSums(df[paste0("Profile_", 1:8, "_monotone")], na.rm = TRUE) == 8
+
+# Create the 'Stric_Monotone' column based on the results of all Profile_i_strict_monotone columns
+df$Stric_Monotone <- rowSums(df[paste0("Profile_", 1:8, "_strict_monotone")], na.rm = TRUE) == 8
+
+
+
+
+# Calculate the total number of rows in the dataframe
+total_rows <- nrow(df)
+
+# Calculate the number of rows with Monotone TRUE
+monotone_true_count <- sum(df$Monotone, na.rm = TRUE)
+
+# Calculate the number of rows with Stric_Monotone TRUE
+stric_monotone_true_count <- sum(df$Stric_Monotone, na.rm = TRUE)
+
+# Calculate the share (proportion) of rows with Monotone TRUE
+monotone_share <- monotone_true_count / total_rows
+
+# Calculate the share (proportion) of rows with Stric_Monotone TRUE
+stric_monotone_share <- stric_monotone_true_count / total_rows
+
+# Print the results
+cat("Share of rows with Monotone TRUE:", monotone_share, "\n")
+cat("Share of rows with Stric_Monotone TRUE:", stric_monotone_share, "\n")
+
+
+
+# Initialize empty vectors to store combined monotone and strict monotone values
+combined_monotone <- logical(0)
+combined_strict_monotone <- logical(0)
+
+# Loop through each profile (i) to combine monotone and strict monotone columns
+for (i in 1:8) {
+  # Construct the column names for Monotone and Strict Monotone for the current profile
+  monotone_col_name <- paste0("Profile_", i, "_monotone")
+  strict_monotone_col_name <- paste0("Profile_", i, "_strict_monotone")
+  
+  # Check if the columns exist and combine the data
+  if (monotone_col_name %in% colnames(df)) {
+    combined_monotone <- c(combined_monotone, df[[monotone_col_name]])
+  }
+  
+  if (strict_monotone_col_name %in% colnames(df)) {
+    combined_strict_monotone <- c(combined_strict_monotone, df[[strict_monotone_col_name]])
+  }
+}
+
+# Calculate the share (proportion) of TRUE entries in the combined monotone vector
+monotone_share <- mean(combined_monotone, na.rm = TRUE)
+
+# Calculate the share (proportion) of TRUE entries in the combined strict monotone vector
+strict_monotone_share <- mean(combined_strict_monotone, na.rm = TRUE)
+
+# Print the results
+cat("Share of TRUE entries in combined Profile monotone columns:", monotone_share, "\n")
+cat("Share of TRUE entries in combined Profile strict monotone columns:", strict_monotone_share, "\n")
+```
+
+
+
+## Calculating the value of information for monotone profiles
+
+The code chunk below warrants a second pair of eyes. It calculates the value of information based on the MPL data. Everything is as we have discussed it so far, with one additional complication. I am only resorting to the open field data in case of, e.g., always preferring one side, if that open field data is consistent with the MPL data. For example, if a participant always prefers to ``Reveal'' (and thus is monotone) but then has indicates in the open field data that their value of information (i.e., revealing) is negative, we have an inconsistency. I do not check for the consistency in general, i.e., if a participant switches in the MPL data, then we take the MPL midpoint as the value. This makes sense, since the open field data is not incentivized.
+
+I calculate the share of ``consistent'' participants Note that it is around 10 percentage points lower than the share of always-monotone participants. 
+
+```{r}
+
+
+# Loop through each profile (i) to create the concatenated column
+for (i in 1:8) {
+  # Create a vector of column names for the current profile
+  cols_to_unite <- paste0("Profile_", i, "_MPL_row_", 1:15)
+  
+  # Check if the columns exist in the dataframe
+  if (all(cols_to_unite %in% colnames(df))) {
+    # Create the new column by uniting the specified columns
+    df <- df %>%
+      unite(!!paste0("Profile_", i, "_MPL"), all_of(cols_to_unite), sep = "", remove = FALSE)
+  }
+}
+
+
+info_value <- c(5, 3, 1, 0.5, 0.25, 0.1, 0.05, 0, -0.05, -0.1, -0.25, -0.5, -1, -3, -5)
+
+
+# Function to compute Profile_i_MPL_value
+compute_profile_value <- function(mpl_string, info_values, monotone, profile_value) {
+  # Convert the MPL string to a vector of digits
+  mpl_digits <- as.numeric(strsplit(mpl_string, "")[[1]])
+  
+  # Find the indices of "1" and "3"
+  index_1 <- which(mpl_digits == 1)
+  index_3 <- which(mpl_digits == 3)
+  
+  # Handle the cases based on the conditions
+  if (!monotone) {
+    return(NA)
+  }
+  
+  if (all(mpl_digits == 2)) {
+    return(profile_value)
+  }
+  
+  if (length(index_3) == 0) {
+    if (profile_value >= 5) {
+      return(profile_value)
+    } else {
+      return(NA)
+    }
+  }
+  
+  if (length(index_1) == 0) {
+    if (profile_value <= -5) {
+      return(profile_value)
+    } else {
+      return(NA)
+    }
+  }
+  
+  # Latest occurrence of "3" and first occurrence of "1"
+  last_3 <- max(index_3)
+  first_1 <- min(index_1)
+  
+  # Calculate the average of positions
+  average_position <- (last_3 + first_1) / 2
+  
+  # Determine the value from info_values
+  if (average_position %% 1 == 0) {
+    if (as.integer(average_position) <= length(info_values) && as.integer(average_position) > 0) {
+      return(info_values[as.integer(average_position)])
+    } else {
+      return(NA)  # Handle out-of-bounds index
+    }
+  } else {
+    lower_index <- floor(average_position)
+    upper_index <- ceiling(average_position)
+    
+    return(mean(c(info_values[lower_index], info_values[upper_index])))
+  }
+}
+
+# Loop through each profile (i) and apply the function
+for (i in 1:8) {
+  profile_mpl_col <- paste0("Profile_", i, "_MPL")
+  profile_monotone_col <- paste0("Profile_", i, "_monotone")
+  profile_value_col <- paste0("Profile_", i, "_MPL_value")
+  profile_value <- paste0("Profile_",i)
+  
+  df <- df %>%
+    rowwise() %>%
+    mutate(!!profile_value_col := case_when(
+      !!sym(profile_monotone_col) == FALSE ~ NA_real_,
+      TRUE ~ map_dbl(!!sym(profile_mpl_col), ~ {
+        profile_value <- .x
+        compute_profile_value(profile_value, info_value, !!sym(profile_monotone_col), !!sym(profile_value))
+      })
+    ))
+}
+
+df <- df %>%
+  rowwise() %>%
+  mutate(value_consistent = all(!is.na(c_across(starts_with("Profile_") & ends_with("_MPL_value"))))) %>%
+  ungroup()
+
+
+# Calculate the share of TRUE values in `value_consistent`
+share_true <- mean(df$value_consistent, na.rm = TRUE)
+
+# Print the share
+print(paste("The share of ``consistent'' participants is:", share_true))
+```
+
+## Plot profile data
+We plot the profile data, now for the ``consistent'' profiles. The values below -10 are moved to -10; values above 10 are moved to 10. One may further restrict the set of participants to those that do well on the attention check and control questions. 
+
+```{r}
+min_val <- -10
+max_val <- 10
+name <- "_.png"
+# Loop through each profile column from Profile_1 to Profile_8
+for (y in 1:8) {
+  profile_col <- paste0("Profile_", y, "_MPL_value")
+  plot_and_save_histogram_profiles(profile_col, folder_name, min_val, max_val, name, binwidth=0.05)
+}
+
+
+```
+
+# Attention check and control questions
+
+## Preferred data set
+
+We now consider the attention check and control questions data. We generate a new dataframe, called df_restricted, that includes only those participants who are ``consistent,'' and can only have one "error" on the 2 control questions and 1 attention check. We also plot the distribution of errors.
+
+```{r}
+# Add a new column 'passed_attention' based on the condition
+df <- df %>%
+  mutate(failed_attention = attention_check1 == "")
+
+df$errors_q_1 <- as.numeric(df$errors_q_1)
+df$errors_q_2 <- as.numeric(df$errors_q_2)
+df$errors_q_total <- df$errors_q_1 + df$errors_q_2
+
+
+df <- df %>%
+  mutate(in_df_restricted = (errors_q_total + failed_attention <= 1) & value_consistent == TRUE)
+
+df_restricted <- df %>%
+  filter(in_df_restricted == TRUE)
+
+print(paste("# all participants / # restricted participants", nrow(df), " / ", nrow(df_restricted)))
+
+plot <- df %>%
+  ggplot(aes(x = duration_minutes, fill = in_df_restricted)) +
+  geom_histogram(binwidth = .5, color = "black", position = "identity", alpha = 0.6) +
+  scale_fill_manual(values = c("FALSE" = "red", "TRUE" = "blue")) +
+  labs(title = "Distribution of Duration in Minutes by In_df_restricted",
+       x = "Duration (minutes)",
+       y = "Frequency",
+       fill = "In_df_restricted") +
+  theme_minimal()
+  print(plot)
+
+# Save the plot to the specified folder
+ggsave(filename = file.path(folder_name, "duration_minutes_by_in_df_restricted.png"),
+       plot = plot,
+       width = 8, height = 6)
+
+plot <- df %>%
+  ggplot(aes(x = in_df_restricted, y = duration_minutes, fill = in_df_restricted)) +
+  geom_boxplot() +
+  stat_summary(fun = mean, geom = "point", shape = 20, size = 5, color = "black") +  # Add the mean
+  scale_fill_manual(values = c("FALSE" = "red", "TRUE" = "blue")) +
+  labs(title = "Boxplot of Duration in Minutes by In_df_restricted (with Mean)",
+       x = "In_df_restricted",
+       y = "Duration (minutes)",
+       fill = "In_df_restricted") +
+  theme_minimal()
+  print(plot)
+
+# Save the plot to the specified folder
+ggsave(filename = file.path(folder_name, "boxplot_duration_by_in_df_restricted_with_mean.png"),
+       plot = plot,
+       width = 8, height = 6)
+
+
+print(paste("# all participants / # restricted participants", nrow(df), " / ", nrow(df_restricted)))
+
+
+plot_and_save_histogram("errors_q_1")
+plot_and_save_histogram("errors_q_2")
+
+df$failed_attention_num <- as.numeric(df$failed_attention)
+
+plot_and_save_histogram("failed_attention_num")
+```
+
+# Principal component analysis
+
+The data is high-dimensional; however, we believe that there are only a few psychological types behind these data. Thus, we consider techniques that reduce the high dimensionality and map them into types. One such technique is principal component analysis. 
+
+## Agree-disagree statements. 
+
+```{r}
+agree_variables <-  c(
+  "agree_dont_know_cant_hurt", 
+  "agree_white_lies_good", 
+  "agree_ignorance_is_bliss", 
+  "agree_never_live_lie", 
+  "agree_truth_is_beauty",
+  "agree_give_me_truth", 
+  "agree_truth_at_all_cost" 
+)
+
+df_subset <- df_restricted[agree_variables] 
+
+# Perform PCA
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+
+# Print a summary of the PCA results
+summary(pca_result)
+
+
+# View the PCA components
+pca_result$rotation
+
+# Scree plot to show the proportion of variance explained
+fviz_eig(pca_result)
+
+# Biplot of the first two principal components
+fviz_pca_biplot(pca_result, repel = TRUE, 
+                col.var = "contrib", # Color by contributions to the PC
+                gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                addEllipses = TRUE, ellipse.level = 0.95)
+
+# Plot the contribution of variables to the first principal component
+fviz_contrib(pca_result, choice = "var", axes = 1)
+
+
+df_restricted <- cbind(df_restricted, pca_result$x)
+
+df_restricted <- df_restricted %>%
+  rename(agree_PC1 = PC1,
+         agree_PC2 = PC2,
+         agree_PC3 = PC3,
+         agree_PC4 = PC4,
+         agree_PC5 = PC5,
+         agree_PC6 = PC6,
+         agree_PC7 = PC7,
+         )
+
+```
+
+Principal components 1 and 2 are pretty interpretable: PC1 is ``anti truth;'' PC2, which is much less important, is a tendancy to agree with statements.
+
+## Store owner
+```{r}
+store_variables <-  c(
+  "bad_bought",
+  "good_bought",
+  "bad_notbought",
+  "good_notbought"
+)
+
+df_subset <- df_restricted[store_variables] 
+
+# Perform PCA
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+
+# Print a summary of the PCA results
+summary(pca_result)
+
+
+# View the PCA components
+pca_result$rotation
+
+# Scree plot to show the proportion of variance explained
+fviz_eig(pca_result)
+
+# Biplot of the first two principal components
+fviz_pca_biplot(pca_result, repel = TRUE, 
+                col.var = "contrib", # Color by contributions to the PC
+                gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                addEllipses = TRUE, ellipse.level = 0.95)
+
+# Plot the contribution of variables to the first principal component
+fviz_contrib(pca_result, choice = "var", axes = 1)
+
+
+df_restricted <- cbind(df_restricted, pca_result$x)
+
+
+df_restricted <- df_restricted %>%
+  rename(store_PC1 = PC1,
+         store_PC2 = PC2,
+         store_PC3 = PC3,
+         store_PC4 = PC4)
+
+```
+
+Principal components 1 and 2 are again pretty interpretable: PC1 is a desire to know the information; PC2 is a desire to only know information that makes one's decision ex-post optimal. 
+
+## Profiles
+
+```{r}
+
+profile_variables <-  c(
+  "Profile_1_MPL_value",
+  "Profile_2_MPL_value",
+  "Profile_3_MPL_value",
+  "Profile_4_MPL_value",
+  "Profile_5_MPL_value",
+  "Profile_6_MPL_value",
+  "Profile_7_MPL_value",
+  "Profile_8_MPL_value"
+)
+
+df_subset <- df_restricted[profile_variables] 
+
+# Perform PCA
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+
+# Print a summary of the PCA results
+summary(pca_result)
+
+
+# View the PCA components
+pca_result$rotation
+
+# Scree plot to show the proportion of variance explained
+fviz_eig(pca_result)
+
+# Biplot of the first two principal components
+fviz_pca_biplot(pca_result, repel = TRUE, 
+                col.var = "contrib", # Color by contributions to the PC
+                gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                addEllipses = TRUE, ellipse.level = 0.95)
+
+# Plot the contribution of variables to the first principal component
+fviz_contrib(pca_result, choice = "var", axes = 1)
+
+
+df_restricted <- cbind(df_restricted, pca_result$x)
+
+
+df_restricted <- df_restricted %>%
+  rename(profiles_PC1 = PC1,
+         profiles_PC2 = PC2,
+         profiles_PC3 = PC3,
+         profiles_PC4 = PC4,
+         profiles_PC5 = PC5,
+         profiles_PC6 = PC6,
+         profiles_PC7 = PC7,
+         profiles_PC8 = PC8)
+
+```
+
+Once again, the PCs are rather interpretable: PC1 is a desire to provide information (with the exception of Profile 7; not that purchasing in 7 is always optimal, even with the surcharge); PC2 is a desire to provide information only when the Consumer bought and not otherwise. 
+
+### Correlations
+
+We next look at the correlations of the PC. Each participant's answers to, say, the Store Owner questions can be summarized by the participant's value for the respective PCs. Here, we look at the correlation of PC values across types of questions (store owner, agree-disagree, profiles). 
+
+```{r}
+# Compute correlation matrix
+cor_matrix <- cor(df_restricted[, c("store_PC2", 
+                                    "agree_PC1", 
+                                    "profiles_PC1")])
+
+# Print the correlation matrix with a descriptive message
+print("The correlation matrix between the PC1's is:")
+print(cor_matrix)
+
+
+cor_matrix <- cor(df_restricted[, c("store_PC1", 
+                                    "store_PC2",
+                                    "agree_PC1", 
+                                    "agree_PC2",
+                                    "profiles_PC1",
+                                    "profiles_PC2")])
+
+# Print the correlation matrix with a descriptive message
+print("The correlation matrix between the PC's is:")
+print(cor_matrix)
+
+```
+
+Recall that:
+
+- Store PC1: "desire to know the information"
+- Agree-disagree PC1: "anti truth"
+- Profiles PC1: "desire to provide the information"
+
+Thus, the correlation matrix is consistent with what we might expect.
+
+
+```{r}
+correlation <- cor(df_restricted$profiles_PC2,df_restricted$store_PC2)
+print(paste("The correlation between the PC2's is:", correlation))
+```
+
+Recall that:
+
+- Store PC2: "desire to share info that rationalizes"
+- Profiles PC2: "desire to share info that rationalizes"
+
+One might expect these to be positively correlated; however, they are not. 
+
+### Correlations with further restircted data
+
+```{r}
+
+max_num <- 8
+min_num <- -8
+
+df_restricted$out_of_range_count <- df_restricted %>%
+  rowwise() %>%
+  mutate(out_of_range = sum(c_across(paste0("Profile_", 1:8, "_MPL_value")) < min_num | 
+                              c_across(paste0("Profile_", 1:8, "_MPL_value")) > max_num)) %>%
+  ungroup() %>%
+  pull(out_of_range)
+
+(filtered_data <- df_restricted %>%
+  filter(out_of_range_count > 0) %>%
+  select(paste0("Profile_", 1:8, "_MPL_value"), `out_of_range_count`, `X10.1.Reason`))
+
+
+output_file <- file.path(folder_name, "extreme_profiles.csv")
+
+# Save the subset data frame to a CSV file
+write.csv(filtered_data, file = output_file, row.names = FALSE)
+
+df_v_restricted <- df_restricted[rowSums(df_restricted[, paste0("Profile_", 1:8, "_MPL_value")] < min_num | 
+                          df_restricted[, paste0("Profile_", 1:8, "_MPL_value")] > max_num) == 0, ]
+
+profile_variables <-  c(
+  "Profile_1_MPL_value",
+  "Profile_2_MPL_value",
+  "Profile_3_MPL_value",
+  "Profile_4_MPL_value",
+  "Profile_5_MPL_value",
+  "Profile_6_MPL_value",
+  "Profile_7_MPL_value",
+  "Profile_8_MPL_value"
+)
+df_subset <- df_v_restricted[profile_variables] 
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+print(summary(pca_result))
+pca_result$rotation
+df_v_restricted <- cbind(df_v_restricted, pca_result$x)
+df_v_restricted <- df_v_restricted %>%
+  rename(profiles_PC1_v = PC1,
+         profiles_PC2_v = PC2,
+         profiles_PC3_v = PC3,
+         profiles_PC4_v = PC4,
+         profiles_PC5_v = PC5,
+         profiles_PC6_v = PC6,
+         profiles_PC7_v = PC7,
+         profiles_PC8_v = PC8)
+
+store_variables <-  c(
+  "bad_bought",
+  "good_bought",
+  "bad_notbought",
+  "good_notbought"
+)
+df_subset <- df_v_restricted[store_variables] 
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+print(summary(pca_result))
+pca_result$rotation
+df_v_restricted <- cbind(df_v_restricted, pca_result$x)
+df_v_restricted <- df_v_restricted %>%
+  rename(store_PC1_v = PC1,
+         store_PC2_v = PC2,
+         store_PC3_v = PC3,
+         store_PC4_v = PC4)
+
+agree_variables <-  c(
+  "agree_dont_know_cant_hurt", 
+  "agree_white_lies_good", 
+  "agree_ignorance_is_bliss", 
+  "agree_never_live_lie", 
+  "agree_truth_is_beauty",
+  "agree_give_me_truth", 
+  "agree_truth_at_all_cost" 
+)
+df_subset <- df_v_restricted[agree_variables] 
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+summary(pca_result)
+pca_result$rotation
+df_v_restricted <- cbind(df_v_restricted, pca_result$x)
+df_v_restricted <- df_v_restricted %>%
+  rename(agree_PC1_v = PC1,
+         agree_PC2_v = PC2,
+         agree_PC3_v = PC3,
+         agree_PC4_v = PC4,
+         agree_PC5_v = PC5,
+         agree_PC6_v = PC6,
+         agree_PC7_v = PC7,
+         )
+
+
+# Compute correlation matrix
+cor_matrix <- cor(df_v_restricted[, c("store_PC1_v", 
+                                    "agree_PC1_v", 
+                                    "profiles_PC2_v")])
+
+# Print the correlation matrix with a descriptive message
+print("The correlation matrix between the PC1's is:")
+print(cor_matrix)
+
+
+cor_matrix <- cor(df_v_restricted[, c("store_PC1_v", 
+                                    "store_PC2_v",
+                                    "agree_PC1_v", 
+                                    "agree_PC2_v",
+                                    "profiles_PC1_v",
+                                    "profiles_PC2_v")])
+
+# Print the correlation matrix with a descriptive message
+print("The correlation matrix between the PC's is:")
+print(cor_matrix)
+
+
+```
+
+We also plot the correlations. 
+
+```{r}
+ggpairs(df_v_restricted[,c("store_PC1_v", 
+                                    "store_PC2_v",
+                                    "agree_PC1_v", 
+                                    "agree_PC2_v",
+                                    "profiles_PC1_v",
+                                    "profiles_PC2_v")])
+
+ggpairs(df_v_restricted[, c("store_PC1_v", 
+                                    "agree_PC1_v", 
+                                    "profiles_PC2_v")])
+```
+### Joint PCA
+
+```{r}
+
+profile_variables <-  c(
+  "Profile_1_MPL_value",
+  "Profile_2_MPL_value",
+  "Profile_3_MPL_value",
+  "Profile_4_MPL_value",
+  "Profile_5_MPL_value",
+  "Profile_6_MPL_value",
+  "Profile_7_MPL_value",
+  "Profile_8_MPL_value",
+  "agree_dont_know_cant_hurt", 
+  "agree_white_lies_good", 
+  "agree_ignorance_is_bliss", 
+  "agree_never_live_lie", 
+  "agree_truth_is_beauty",
+  "agree_give_me_truth", 
+  "agree_truth_at_all_cost",
+  "bad_bought",
+  "good_bought",
+  "bad_notbought",
+  "good_notbought"
+)
+df_subset <- df_v_restricted[profile_variables] 
+pca_result <- prcomp(df_subset, center = TRUE, scale. = TRUE)
+summary(pca_result)
+pca_result$rotation
+df_v_restricted <- cbind(df_v_restricted, pca_result$x)
+
+```
+
+
+# Categories
+
+In this section, we discretize the profile data: "pos", "neg", "zero". We then group profiles into three groups: 
+
+- **Group 1:** Bought and should have bought (ex-post and ex-ant)
+  - Profile 7
+- **Group 2:** Bought and should not have bought (ex-post)
+  - Profiles 1, 4, 5, 8
+- **Group 3:** Did not buy and should not have bought (ex-post)
+  - Profiles 2, 3, 6
+
+We then assess the consistency of a participant's discretized preferences within a group. Since there is only one profile in Group 1, all participants will trivially be consistent. For the other two groups, we plot the distribution of the frequency of a participant's most frequent discretized answer in that group. 
+
+```{r}
+# Loop through each profile from 1 to 8
+for (i in 1:8) {
+  # Construct the column names
+  profile_value_col <- paste0("Profile_", i, "_MPL_value")
+  profile_value_cat_col <- paste0("Profile_", i, "_MPL_value_cat")
+  
+  # Create the new categorical column based on the conditions
+  df_restricted <- df_restricted %>%
+    mutate(!!profile_value_cat_col := case_when(
+      !!sym(profile_value_col) > 0  ~ "pos",  # If the value is greater than 0, set to "pos"
+      !!sym(profile_value_col) < 0  ~ "neg",  # If the value is less than 0, set to "neg"
+      TRUE                          ~ "0"     # Otherwise, set to "0"
+    ))
+}
+
+df_restricted <- df_restricted %>%
+  rowwise() %>%
+  mutate(most_frequent_count_cat_2 = {
+    # Select the relevant columns for the profile subset
+    profile_subset <- c_across(c(Profile_1_MPL_value_cat, 
+                                 Profile_4_MPL_value_cat, 
+                                 Profile_5_MPL_value_cat, 
+                                 Profile_8_MPL_value_cat))
+    
+    # Count the frequency of each value ("pos", "neg", "0")
+    freq <- table(profile_subset)
+    
+    # Find the maximum count among the frequencies
+    max(freq)
+  }) %>%
+  ungroup()
+
+# View the updated data frame
+df_restricted$most_frequent_count_cat_2
+
+
+
+df_restricted <- df_restricted %>%
+  rowwise() %>%
+  mutate(most_frequent_count_cat_3 = {
+    # Select the relevant columns for the profile subset
+    profile_subset <- c_across(c(Profile_2_MPL_value_cat, 
+                                 Profile_3_MPL_value_cat, 
+                                 Profile_6_MPL_value_cat))
+    
+    # Count the frequency of each value ("pos", "neg", "0")
+    freq <- table(profile_subset)
+    
+    # Find the maximum count among the frequencies
+    max(freq)
+  }) %>%
+  ungroup()
+
+# View the updated data frame
+df_restricted$most_frequent_count_cat_3
+
+plot_and_save_histogram_df(
+  df = df_restricted,
+  file_name = "_consistency.png",
+  column_name = 'most_frequent_count_cat_2',
+  title_add = ' same sign in Profiles: 1, 4, 5, 8'
+)
+
+plot_and_save_histogram_df(
+  df = df_restricted,
+  file_name = "_consistency.png",
+  column_name = 'most_frequent_count_cat_3',
+  title_add = ' same sign in Profiles: 2, 3, 6'
+)
+```
+
+# Plot store owner data for the restricted sample
+
+We now plot the store owner data for the restricted sample. Higher values mean ``Prefer to know.''
+
+```{r}
+# Define the columns you want to plot histograms for
+columns_to_plot <- c("bad_bought", "good_bought", "bad_notbought", "good_notbought")  # Replace with your column names
+# Function to create and save histogram for a given column
+plot_and_save_histogram <- function(column_name) {
+  # Dynamically create the plot for each column
+  plot <- df_restricted %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+    labs(title = paste("Distribution of", column_name),
+         x = column_name,
+         y = "Frequency") +
+    theme_minimal()
+  
+  print(plot)
+  # Save the plot to the specified folder with dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, "_distribution_restricted.png")),
+         plot = plot,
+         width = 8, height = 6)
+}
+
+# Loop through each column and create/save histograms
+walk(columns_to_plot, plot_and_save_histogram)
+```
+
+# Regression
+
+As a sense check, we regress the answers to the store-owner questions on our ``toy'' model.
+
+```{r}
+
+
+new_df <- data.frame(
+  value = c(as.vector(t(df_restricted$bad_bought)),
+                  as.vector(t(df_restricted$good_bought)),
+                  as.vector(t(df_restricted$bad_notbought)),
+                  as.vector(t(df_restricted$good_notbought))), 
+  type = c(rep(c("bad_bought"), nrow(df_restricted)),rep(c("good_bought"), nrow(df_restricted)),rep(c("bad_notbought"), nrow(df_restricted)),rep(c("good_notbought"), nrow(df_restricted)))
+)
+
+
+new_df$indicator <- ifelse(new_df$type %in% c("good_bought", "bad_notbought"), 1, -1)
+
+model <- lm(value ~ indicator, data = new_df)
+summary(model)
+
+
+```
+
+
+Saving the data set to export it to MATLAB.
+
+```{r}
+output_file <- file.path(folder_name, "df_restricted.csv")
+
+# Save the subset data frame to a CSV file
+write.csv(df_restricted, file = output_file, row.names = FALSE)
+```
+
+
+### Presentation output
+
+```{r}
+df_plot <- df_v_restricted %>%
+  pivot_longer(c(  "Profile_1_MPL_value",
+  "Profile_2_MPL_value",
+  "Profile_3_MPL_value",
+  "Profile_4_MPL_value",
+  "Profile_5_MPL_value",
+  "Profile_6_MPL_value",
+  "Profile_7_MPL_value",
+  "Profile_8_MPL_value"), names_to = "value", values_to = "count") %>%
+  select(value,count)
+
+min_val <- -8
+max_val <- 8 
+name <- "all_v_restricted_distribution.png"
+
+plot_and_save_all_histogram_profiles <- function(df,column_name, folder_name, min_val, max_val, name, binwidth = 1) {
+  # Clip values in the specified column to the given range
+  df[[column_name]] <- clip_values(df[[column_name]], min_val, max_val)
+  
+  # Dynamically create the plot for each column
+  plot <- df %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_histogram(binwidth = binwidth, fill = "blue", color = "black") +
+    scale_x_continuous(limits = c(min_val - 0.5, max_val + 0.5)) +  # Set the x-axis limits based on the range
+    labs(x = "Value of info, $W",
+         y = "Frequency") +
+    theme_classic() +
+    theme(
+      axis.title.x = element_text(size = 16),   # Increase x-axis title font size
+      axis.title.y = element_text(size = 16),   # Increase y-axis title font size
+      axis.text.x = element_text(size = 14),    # Increase x-axis text font size
+      axis.text.y = element_text(size = 14),    # Increase y-axis text font size
+      plot.title = element_text(size = 16, hjust = 0.5) # Increase plot title font size, center it
+    )
+  
+  print(plot)
+  
+  # Save the plot to the specified folder with a dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, name)),
+         plot = plot,
+         width = 4, height = 3)
+}
+
+
+
+plot_and_save_all_histogram_profiles(df_plot, "count", folder_name, min_val, max_val, name, binwidth = 0.05)
+
+```
+Store owner
+
+```{r}
+# Define the columns you want to plot histograms for
+columns_to_plot <- c("bad_bought", "good_bought", "bad_notbought", "good_notbought")  # Replace with your column names
+# Function to create and save histogram for a given column
+
+# Function to create and save histogram for a given column
+plot_and_save_histogram <- function(column_name) {
+  # Dynamically create the plot for each column
+  
+  frequency <- "Frequency"
+  if (column_name %in% c("bad_notbought", "good_notbought")) {
+    frequency <- ""}
+  value_info <- "Value of info"
+  if (column_name %in% c("good_bought", "good_notbought")) {
+    value_info <- ""}
+  plot <- df_v_restricted %>%
+    ggplot(aes_string(x = column_name)) +
+    geom_histogram(binwidth = 1, fill = "black", color = "black") +
+    labs(
+         x = value_info,
+         y = frequency) +
+    scale_x_continuous(limits = c(0, 100)) +  # Set x-axis limits to 0 and 100
+    scale_y_continuous(limits = c(0, 5), breaks = c(0, 5),  labels = scales::comma_format(accuracy = 1)) +  # Round y-axis labels
+    theme_classic() +
+    theme(
+      axis.title.x = element_text(size = 16),   # Increase x-axis title font size
+      axis.title.y = element_text(size = 16),   # Increase y-axis title font size
+      axis.text.x = element_text(size = 14),    # Increase x-axis text font size
+      axis.text.y = element_text(size = 14),    # Increase y-axis text font size
+      plot.title = element_text(size = 16, hjust = 0.5) # Increase plot title font size, center it
+    )
+  
+  print(plot)
+  # Save the plot to the specified folder with dynamic file name
+  ggsave(filename = file.path(folder_name, paste0(column_name, "_distribution.png")),
+         plot = plot,
+         width = 4, height = 1.5)
+}
+
+# Loop through each column and create/save histograms
+walk(columns_to_plot, plot_and_save_histogram)
+```

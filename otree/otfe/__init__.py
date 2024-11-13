@@ -58,16 +58,6 @@ def creating_session(subsession: Subsession):
             p.participant.cq_2_mistakes = 0
             p.participant.which_belief = random.choice(["1","2","3","1_2","1_3","2_3"])
 
-
-
-            # p.participant.cqs_find_out_mistakes = 0
-            # p.participant.cq1_who_mistakes = 0
-            # p.participant.cq1_what_mistakes = 0
-            # p.participant.cq1_find_out_mistakes = 0
-            # p.participant.cq2_who_mistakes = 0
-            # p.participant.cq2_what_mistakes = 0
-            # p.participant.cq2_find_out_mistakes = 0
-
             print(p.participant.treatment)
             i+=1
 
@@ -105,7 +95,7 @@ class Player(BasePlayer):
             [2, 'No. I decide for how long and how intensively I want to work each work period.']
         ],
         widget=widgets.RadioSelect,
-        label='<strong>Do you have to work throughout the entirety of each 10-minute work period? </strong>'
+        label='<strong>Do you have to work throughout the entirety of each ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period? </strong>'
         )
     
 
@@ -356,7 +346,7 @@ class CQS(Page):
             
             error_explanations = {
                 'cq_1': 'Your answer is incorrect. The default tax rate is 25%. Please correct your answer.',
-                'cq_2': 'Your answer is incorrect. You do not have to work throughout the 10-minute work period. Please correct your answer!'
+                'cq_2': 'Your answer is incorrect. You do not have to work throughout the ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period. Please correct your answer!'
             }
             error_messages = dict()
             for field_name in solutions:
@@ -644,8 +634,6 @@ class Survey2(Page):
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages
-
-
 
 
 

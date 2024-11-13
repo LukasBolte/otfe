@@ -716,14 +716,18 @@ class Outcome(Page):
         belief_bonus = abs(correct_belief - participant_belief) < delta
 
         if belief_bonus:
-            belief_bonus_text = 'You have earned a bonus of $'+ C.BELIEF_BONUS +' for your accurate beliefs about the tax rate.'
+            belief_bonus_text = 'You have earned a bonus of <b>$'+ str(C.BELIEF_BONUS) +'</b> for your accurate beliefs about the tax rate.'
         else:
             belief_bonus_text = 'You have not earned a bonus for your beliefs about the tax rate.'
 
-        if belief_bonus:
-            total_post_tax_earnings += C.BELIEF_BONUS
         
-        player.participant.payoff  = total_post_tax_earnings + C.PARTICIPATION_FEE
+        
+        player.participant.payoff  = total_post_tax_earnings + C.PARTICIPATION_FEE 
+
+        if belief_bonus:
+            player.participant.payoff += C.BELIEF_BONUS
+
+
         return {
             'total_post_tax_earnings': total_post_tax_earnings,
             'belief_bonus_text': belief_bonus_text,

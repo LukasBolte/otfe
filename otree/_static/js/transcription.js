@@ -65,8 +65,7 @@ function transcription(parameters) {
         "psi": "ψ",
         "omega": "ω",
         "period": ".",
-        "comma": ",",
-        "semicolon": ";"
+        "comma": ","
     };
 
     // Create modal structure

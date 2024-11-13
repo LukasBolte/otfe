@@ -6,8 +6,7 @@ from otree.api import *
 import numpy as np
 
 doc = """
-risk
-Lukas Bolte: lukas.bolte@outlook.com. 
+OTFE Lukas Bolte: lukas.bolte@outlook.com. 
 """
 
 

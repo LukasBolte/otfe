@@ -443,9 +443,9 @@ class TaxInfo1(Page):
         # 'C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'
 
         if player.participant.treatment == 'C-Info':
-            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were randomly selected for a <b>one-time</b> tax shock on last period’s earnings that changed their tax rate to 50%. As initially established, your default tax rate for future work periods is still 25%.</p>"
+            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were randomly selected for a <b>one-time</b> tax shock on last period’s earnings that <b>changed their tax rate to 50%</b>. As initially established, your <b>default tax rate for future work periods is still 25%</b>.</p>"
         elif player.participant.treatment == 'T1-1-Info':
-            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were also randomly selected for a <b>one-time</b> tax shock on last period’s earnings that changed their tax rate to 50%. As initially established, your default tax rate for future work periods is still 25%.</p>"
+            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were also randomly selected for a <b>one-time</b> tax shock on last period’s earnings that <b>changed their tax rate to 50%</b>. As initially established, your <b>default tax rate for future work periods is still 25%</b>.</p>"
 
         return { 
             'tax_info': tax_info,

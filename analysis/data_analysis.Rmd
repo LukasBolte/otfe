@@ -6,7 +6,7 @@ output:
     df_print: paged
 ---
 
-This document may be used to analyze the data. For now, it just loads the data. 
+This document may be used to analyze the data. For now, it just loads the data.
 
 # Getting started: Importing the raw data, loading libraries, and checking all variables are populated.
 
@@ -69,7 +69,6 @@ ggsave(filename = file.path(output_folder, "duration_minutes_distribution.png"),
        width = 8, height = 6)
 ```
 
-
 ```{r}
 
 # Print the average payment
@@ -96,6 +95,7 @@ ggsave(filename = file.path(output_folder, "payoff_distribution.png"),
        plot = plot,
        width = 8, height = 6)
 ```
+
 ```{r}
 # Define the levels in the order you want them to appear
 df$participant.treatment <- factor(df$participant.treatment, 
@@ -115,7 +115,6 @@ ggsave(filename = file.path(output_folder, "treatment_distribution.png"),
        width = 8, height = 6)
 
 ```
-
 
 ```{r}
 

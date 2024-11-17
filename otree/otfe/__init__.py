@@ -6,8 +6,7 @@ from otree.api import *
 import numpy as np
 
 doc = """
-risk
-Lukas Bolte: lukas.bolte@outlook.com. 
+OTFE Lukas Bolte: lukas.bolte@outlook.com. 
 """
 
 
@@ -59,16 +58,6 @@ def creating_session(subsession: Subsession):
             p.participant.cq_2_mistakes = 0
             p.participant.which_belief = random.choice(["1","2","3","1_2","1_3","2_3"])
 
-
-
-            # p.participant.cqs_find_out_mistakes = 0
-            # p.participant.cq1_who_mistakes = 0
-            # p.participant.cq1_what_mistakes = 0
-            # p.participant.cq1_find_out_mistakes = 0
-            # p.participant.cq2_who_mistakes = 0
-            # p.participant.cq2_what_mistakes = 0
-            # p.participant.cq2_find_out_mistakes = 0
-
             print(p.participant.treatment)
             i+=1
 
@@ -106,7 +95,7 @@ class Player(BasePlayer):
             [2, 'No. I decide for how long and how intensively I want to work each work period.']
         ],
         widget=widgets.RadioSelect,
-        label='<strong>Do you have to work throughout the entirety of each 10-minute work period? </strong>'
+        label='<strong>Do you have to work throughout the entirety of each ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period? </strong>'
         )
     
 
@@ -223,7 +212,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='<p>The above table shows the US personal income tax schedule for a single filer in 2023. <b>What do you think is the probability is that the US personal income tax rate schedule will substantially change...</b></p><p><b>...in the next 3 months?</b></p>',
+        label='<p>The above table shows the US personal income tax schedule for a single filer in 2023. <b>What do you think is the probability that the US personal income tax rate schedule will substantially change...</b></p><p><b>...in the next 3 months?</b></p>',
         widget=widgets.RadioSelectHorizontal,
     )
 
@@ -357,7 +346,7 @@ class CQS(Page):
             
             error_explanations = {
                 'cq_1': 'Your answer is incorrect. The default tax rate is 25%. Please correct your answer.',
-                'cq_2': 'Your answer is incorrect. You do not have to work throughout the 10-minute work period. Please correct your answer!'
+                'cq_2': 'Your answer is incorrect. You do not have to work throughout the ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period. Please correct your answer!'
             }
             error_messages = dict()
             for field_name in solutions:
@@ -454,9 +443,9 @@ class TaxInfo1(Page):
         # 'C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'
 
         if player.participant.treatment == 'C-Info':
-            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were randomly selected for a <b>one-time</b> tax shock on last period’s earnings that changed their tax rate to 50%. As initially established, your default tax rate for future work periods is still 25%.</p>"
+            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were randomly selected for a <b>one-time</b> tax shock on last period’s earnings that <b>changed their tax rate to 50%</b>. As initially established, your <b>default tax rate for future work periods is still 25%</b>.</p>"
         elif player.participant.treatment == 'T1-1-Info':
-            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were also randomly selected for a <b>one-time</b> tax shock on last period’s earnings that changed their tax rate to 50%. As initially established, your default tax rate for future work periods is still 25%.</p>"
+            tax_info = "<p>Here is some information that you may want to take into account when thinking about future tax rates:</p> <p style='text-align: center; max-width: 90%; margin: auto;'>Other individuals were also randomly selected for a <b>one-time</b> tax shock on last period’s earnings that <b>changed their tax rate to 50%</b>. As initially established, your <b>default tax rate for future work periods is still 25%</b>.</p>"
 
         return { 
             'tax_info': tax_info,
@@ -648,8 +637,6 @@ class Survey2(Page):
 
 
 
-
-
 class Outcome(Page):
 
     @staticmethod
@@ -717,14 +704,18 @@ class Outcome(Page):
         belief_bonus = abs(correct_belief - participant_belief) < delta
 
         if belief_bonus:
-            belief_bonus_text = 'You have earned a bonus of $'+ C.BELIEF_BONUS +' for your accurate beliefs about the tax rate.'
+            belief_bonus_text = 'You have earned a bonus of <b>$'+ str(C.BELIEF_BONUS) +'</b> for your accurate beliefs about the tax rate.'
         else:
             belief_bonus_text = 'You have not earned a bonus for your beliefs about the tax rate.'
 
-        if belief_bonus:
-            total_post_tax_earnings += C.BELIEF_BONUS
         
-        player.participant.payoff  = total_post_tax_earnings + C.PARTICIPATION_FEE
+        
+        player.participant.payoff  = total_post_tax_earnings + C.PARTICIPATION_FEE 
+
+        if belief_bonus:
+            player.participant.payoff += C.BELIEF_BONUS
+
+
         return {
             'total_post_tax_earnings': total_post_tax_earnings,
             'belief_bonus_text': belief_bonus_text,

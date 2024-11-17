@@ -135,7 +135,7 @@ class Player(BasePlayer):
             (4, 'Save more'),
             (5, 'Definitely save more'),
         ],
-        label="<p>Some countries have implemented one-time wealth taxes—taxes on real and/or financial assets that only apply for a single year.</p><p>For example, in 2013, the government of Cyprus decided to tax all domestic bank account deposits only a single time at a rate up to 9.9%.</p><p>As another example, during the Coronavirus pandemic, the government of Argentina decided to tax high-wealth individuals a one-time rate of 3.5% of their assessed wealth.</p><p>If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to increase or reduce the <i>amount you normally save out of your income?</i></b></p>",
+        label="<p>Some countries have implemented one-time wealth taxes—taxes on real and/or financial assets that only apply for a single year.</p><p>For example, in 2013, the government of Cyprus decided to tax all domestic bank account deposits only a single time at a rate up to 9.9%.</p><p>As another example, during the Coronavirus pandemic, the government of Argentina decided to tax high-wealth individuals a one-time rate of 3.5% of their assessed wealth.</p><p>Consider the scenario where your government implemented one of these taxes in the recent past. To be clear, this kind of tax would only affect your <i>wealth</i> (e.g. stocks you own, money held in bank accounts, etc.;  your work pay would not be directly affected by the tax). If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to increase or reduce the <i>amount you normally save out of your income?</i></b></p>",
         widget=widgets.RadioSelectHorizontal,
     )
 
@@ -415,13 +415,13 @@ class EndOfWork1(Page):
     
 
         if player.participant.treatment in ['C-Info','C-NoInfo']:  
-            tax_info = "<b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<font size="20">  <b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%.</font>"
         elif player.participant.treatment in ['T1-T-Info','T1-T-NoInfo']:
-            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 50%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<font size="20"><b>The tax rate for Work Period 1 was changed to a final tax rate of 50%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%.</font>"
         elif player.participant.treatment == 'T1-P':
-            tax_info = "<b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change from 50%."
+            tax_info = "<font size="20"><b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change from 50%.</font>"
         elif player.participant.treatment == 'T2-T':
-            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<font size="20"><b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%.</font>"
 
         tax_rate = C.TAX_RATES[player.participant.treatment][0] 
         net_earnings = initial_gross_earnings*(1-tax_rate)

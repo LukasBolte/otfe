@@ -415,13 +415,13 @@ class EndOfWork1(Page):
     
 
         if player.participant.treatment in ['C-Info','C-NoInfo']:  
-            tax_info = "<b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<font size="20">  <b>Your tax rate is 25%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%.</font>"
         elif player.participant.treatment in ['T1-T-Info','T1-T-NoInfo']:
-            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 50%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<font size="20"><b>The tax rate for Work Period 1 was changed to a final tax rate of 50%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%.</font>"
         elif player.participant.treatment == 'T1-P':
-            tax_info = "<b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change from 50%."
+            tax_info = "<font size="20"><b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change from 50%.</font>"
         elif player.participant.treatment == 'T2-T':
-            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<font size="20"><b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%.</font>"
 
         tax_rate = C.TAX_RATES[player.participant.treatment][0] 
         net_earnings = initial_gross_earnings*(1-tax_rate)

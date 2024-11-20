@@ -102,7 +102,7 @@ class Player(BasePlayer):
     cq_3 = models.IntegerField(blank=True,
         choices=[
             [1, 'One transcription task.'],
-            [2, 'I can complete as many transcription tasks as I can during each work period. After I complete a transcription, a new transcription task will appear.']
+            [2, 'I can complete as many transcription tasks as I would like during each work period. After I complete a transcription, a new transcription task will appear.']
         ],
         widget=widgets.RadioSelect,
         label='<strong>How many transcription tasks are you able to complete per work period?</strong>'
@@ -358,7 +358,7 @@ class CQS(Page):
             error_explanations = {
                 'cq_1': 'Your answer is incorrect. The default tax rate is 25%. Please correct your answer.',
                 'cq_2': 'Your answer is incorrect. You do not have to work throughout the ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period. Please correct your answer!',
-                'cq_3': 'Your answer is incorrect. You can complete as many transcription tasks as you would like throughout the work period. As soon as you complete a transcription task, a new one will appear. Please correct your answer!'
+                'cq_3': 'Your answer is incorrect. You can complete as many transcription tasks as you would like for the duration of the work period. As soon as you complete a transcription task, a new one will appear. Please correct your answer!'
             }
             error_messages = dict()
             for field_name in solutions:

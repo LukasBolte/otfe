@@ -56,6 +56,7 @@ def creating_session(subsession: Subsession):
 
             p.participant.cq_1_mistakes = 0
             p.participant.cq_2_mistakes = 0
+            p.participant.cq_3_mistakes = 0
             p.participant.which_belief = random.choice(["1","2","3","1_2","1_3","2_3"])
 
             print(p.participant.treatment)
@@ -350,7 +351,7 @@ class CQS(Page):
         if not player.session.config['development']:
             solutions = dict(
                 cq_1=2,
-                cq_2=2
+                cq_2=2,
                 cq_3=2
                 )
             

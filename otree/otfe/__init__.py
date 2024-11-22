@@ -56,6 +56,7 @@ def creating_session(subsession: Subsession):
 
             p.participant.cq_1_mistakes = 0
             p.participant.cq_2_mistakes = 0
+            p.participant.cq_3_mistakes = 0
             p.participant.which_belief = random.choice(["1","2","3","1_2","1_3","2_3"])
 
             print(p.participant.treatment)
@@ -96,6 +97,15 @@ class Player(BasePlayer):
         ],
         widget=widgets.RadioSelect,
         label='<strong>Do you have to work throughout the entirety of each ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period? </strong>'
+        )
+
+    cq_3 = models.IntegerField(blank=True,
+        choices=[
+            [1, 'One transcription task.'],
+            [2, 'I can complete as many transcription tasks as I would like during each work period. After I complete a transcription, a new transcription task will appear.']
+        ],
+        widget=widgets.RadioSelect,
+        label='<strong>How many transcription tasks are you able to complete per work period?</strong>'
         )
     
 
@@ -334,19 +344,21 @@ class TaxInstructions(Page):
 
 class CQS(Page):
     form_model = 'player'
-    form_fields = ['cq_1', 'cq_2']
+    form_fields = ['cq_1', 'cq_2', 'cq_3']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             solutions = dict(
                 cq_1=2,
-                cq_2=2
+                cq_2=2,
+                cq_3=2
                 )
             
             error_explanations = {
                 'cq_1': 'Your answer is incorrect. The default tax rate is 25%. Please correct your answer.',
-                'cq_2': 'Your answer is incorrect. You do not have to work throughout the ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period. Please correct your answer!'
+                'cq_2': 'Your answer is incorrect. You do not have to work throughout the ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period. Please correct your answer!',
+                'cq_3': 'Your answer is incorrect. You can complete as many transcription tasks as you would like for the duration of the work period. As soon as you complete a transcription task, a new one will appear. Please correct your answer!'
             }
             error_messages = dict()
             for field_name in solutions:

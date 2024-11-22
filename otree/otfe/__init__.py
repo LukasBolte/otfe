@@ -29,7 +29,7 @@ class C(BaseConstants):
             'T2-T': [.75,.25,.25]
         }
 
-    WORK_PERIOD_LENGTH = 2 # change to 10 for real experiment
+    WORK_PERIOD_LENGTH = 10 # change to 10 for real experiment
 
     INSTRUCTIONS_BELIEFS = 'otfe/Review-instructionsBeliefs.html'
     INSTRUCTIONS = 'otfe/Review-instructions.html'

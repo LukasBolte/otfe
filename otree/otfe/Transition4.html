@@ -12,14 +12,31 @@
     We are next going to ask you <b>six</b> questions about taxes in the real world. 
 </p>
 
+<p>
+    It is very important to us that the study participants, like yourself, are paying attention and are not giving random answers. Hence, we have a little attention check: Please click <span id="clickable">HERE</span> to show that you are reading carefully. Thank you for understanding.   
+</p>
+
 <button style="float: right" class="btn btn-primary btn-large">Next</button>
+
+<input type="hidden" name="data_dummy" id="data_dummy" value="failed"/>
 
 {% endblock %}
 
 {% block styles %}
-
+<style>
+    .highlight {
+        background-color: green;
+        color: white;
+        padding: 2px;
+    }
+</style>
 {% endblock %}
 
 {% block scripts %}
-
+<script>
+    document.getElementById("clickable").addEventListener("click", function() {
+        this.classList.add("highlight");
+        document.getElementById('data_dummy').value = "passed";
+    });
+</script>
 {% endblock %}

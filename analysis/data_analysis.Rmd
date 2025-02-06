@@ -1,6 +1,6 @@
 ---
 title: "OTFE"
-date: "November 2024"
+date: "February 2025"
 output:
   html_document:
     df_print: paged
@@ -142,13 +142,14 @@ for (i in seq_along(json_columns)) {
 df <- df %>%
   rename(
     cq_1_mistakes = participant.cq_1_mistakes,
-    cq_2_mistakes = participant.cq_2_mistakes
+    cq_2_mistakes = participant.cq_2_mistakes,
+    attention_check = participant.attention_check
   )
 
 ```
 
 ```{r}
-belief_columns <- c("beliefs1", "beliefs1", "beliefs1_2", "beliefs1_3", "beliefs2", "beliefs2_2", "beliefs2_3", "beliefs3", "beliefs4")
+belief_columns <- c("beliefs1", "beliefs1_2", "beliefs1_3", "beliefs2", "beliefs2_3", "beliefs3", "beliefs4")
 
 # Remove the 'participant.' prefix only from specified columns
 df <- df %>%
@@ -175,5 +176,4 @@ feedback_columns <- c("feedback", "feedback_difficulty", "feedback_understanding
 df <- df %>%
   rename_with(~ gsub("^participant\\.", "", .), 
               .cols = starts_with("participant.") & ends_with(feedback_columns))
-
 ```

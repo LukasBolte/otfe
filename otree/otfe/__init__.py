@@ -17,7 +17,7 @@ class C(BaseConstants):
     APPROX_TIME = "35-45 minutes"
     AVG_TOTAL_PAYMENT = "$16"
     PARTICIPATION_FEE = 5
-    ROW_PAYMENT = 25
+    ROW_PAYMENT = 15
     MAX_MISTAKES = 5
     BELIEF_BONUS = 1
     TAX_RATES = {
@@ -26,7 +26,7 @@ class C(BaseConstants):
             'T1-T-Info': [.5,.25,.25],
             'T1-T-NoInfo': [.5,.25,.25],
             'T1-P': [.5,.5,.5],
-            'T2-T': [.75,.25,.25]
+            'T2-T': [.90,.25,.25]
         }
 
     WORK_PERIOD_LENGTH = 10 # change to 10 for real experiment
@@ -42,7 +42,7 @@ class Subsession(BaseSubsession):
 
 def creating_session(subsession: Subsession):
     if subsession.round_number == 1:
-        treatments = ['C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T']
+        treatments = ['C-NoInfo','T2-T'] # change to ['C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'] for real experiment
         random.shuffle(treatments)
         treatments = itertools.cycle(treatments)
         i=1
@@ -85,7 +85,7 @@ class Player(BasePlayer):
     cq_2 = models.IntegerField(blank=True,
         choices=[
             [1, 'Yes.'],
-            [2, 'No. I decide for how long and how intensively I want to work each work period.']
+            [2, 'No. I decide for how long and how intensively I want to work each work period. I can take breaks whenever I want.']
         ],
         widget=widgets.RadioSelect,
         label='<strong>Do you have to work throughout the entirety of each ' + str(C.WORK_PERIOD_LENGTH) + '-minute work period? </strong>'
@@ -403,7 +403,7 @@ class EndOfWork1(Page):
         elif player.participant.treatment == 'T1-P':
             tax_info = "<b>Your tax rate has been permanently changed to 50%</b>. This new tax rate applies to earnings from the last work period and to future earnings. It will not change from 50%."
         elif player.participant.treatment == 'T2-T':
-            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 75%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
+            tax_info = "<b>The tax rate for Work Period 1 was changed to a final tax rate of 90%</b>. This tax rate is imposed on your earnings only for the last work period. Your default tax rate for future work periods is still 25%."
 
         tax_rate = C.TAX_RATES[player.participant.treatment][0] 
         net_earnings = initial_gross_earnings*(1-tax_rate)
@@ -605,27 +605,13 @@ class Outcome(Page):
             initial_gross_earning = correct_attempts*C.ROW_PAYMENT/100
             initial_gross_earnings.append(initial_gross_earning)
 
-        tax_rates = {
-            'C-Info': [.25,.25,.25],
-            'C-NoInfo': [.25,.25,.25],
-            'T1-T-Info': [.5,.25,.25],
-            'T1-T-NoInfo': [.5,.25,.25],
-            'T1-P': [.5,.5,.5],
-            'T2-T': [.75,.25,.25]
-        }
-
+        tax_rates = C.TAX_RATES
+        
         tax_rate = tax_rates[player.participant.treatment]
         tax_rate = np.array(tax_rate) 
         total_post_tax_earnings = np.dot(1-tax_rate, initial_gross_earnings)
 
-        correct_beliefs = tax_rates = {
-            'C-Info': [.25,.25,.25],
-            'C-NoInfo': [.25,.25,.25],
-            'T1-T-Info': [.5,.25,.25],
-            'T1-T-NoInfo': [.5,.25,.25],
-            'T1-P': [.5,.5,.5],
-            'T2-T': [.75,.25,.25]
-        }
+        correct_beliefs = C.TAX_RATES 
 
         participant_belief = f'beliefs{player.participant.which_belief}'
         participant_belief = int(getattr(player.participant, participant_belief))/100
@@ -642,32 +628,34 @@ class Outcome(Page):
         delta = 0.025
         belief_bonus = abs(correct_belief - participant_belief) < delta
 
+        player.participant.belief_bonus = belief_bonus
+
         if belief_bonus:
             belief_bonus_text = 'You have earned a bonus of <b>$'+ str(C.BELIEF_BONUS) +'</b> for your accurate beliefs about the tax rate.'
         else:
             belief_bonus_text = 'You have not earned a bonus for your beliefs about the tax rate.'
 
-        player.participant.payoff  = total_post_tax_earnings + C.PARTICIPATION_FEE 
+        player.participant.payoff  = total_post_tax_earnings
 
         if belief_bonus:
             player.participant.payoff += C.BELIEF_BONUS
 
+        total_payment = player.participant.payoff + C.PARTICIPATION_FEE
         return {
             'total_post_tax_earnings': total_post_tax_earnings,
             'belief_bonus_text': belief_bonus_text,
-            'total_payment': player.participant.payoff
+            'total_payment': total_payment
         }
 
 class Feedback(Page):
     form_model = 'player'
-    form_fields = ['feedback', 'feedback_difficulty', 'feedback_understanding', 'feedback_satisfied', 'feedback_pay']
+    form_fields = ['feedback','feedback_difficulty','feedback_understanding','feedback_satisfied','feedback_pay']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['feedback_difficulty', 'feedback_understanding', 'feedback_satisfied',
-                               'feedback_pay']:
+            for field_name in ['feedback_difficulty','feedback_understanding','feedback_satisfied','feedback_pay']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages

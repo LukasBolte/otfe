@@ -20,12 +20,12 @@ library(extrafont)
 library(factoextra)
 library(GGally)
 
-csv_file <- "data/all_apps_wide_2025-02-07.csv"
+csv_file <- "data/all_apps_wide_2025-02-07-2.csv"
 df <- read_csv(csv_file) 
 df <- df %>% filter(participant.finished == 1)
 
 # Define the folder name variable
-folder_name <- "output_2025-02-06"
+folder_name <- "output_2025-02-07-pilot_2"
 
 output_folder <- paste0("output/", folder_name)
 # Create the new folder in the working directory if it doesn't exist

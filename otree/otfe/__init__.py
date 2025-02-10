@@ -42,7 +42,7 @@ class Subsession(BaseSubsession):
 
 def creating_session(subsession: Subsession):
     if subsession.round_number == 1:
-        treatments = ['C-NoInfo','T2-T'] # change to ['C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'] for real experiment
+        treatments = ['C-Info','C-NoInfo', 'T1-T-Info', 'T1-T-NoInfo','T1-P','T2-T'] 
         random.shuffle(treatments)
         treatments = itertools.cycle(treatments)
         i=1

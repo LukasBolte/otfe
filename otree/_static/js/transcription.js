@@ -228,7 +228,7 @@ function transcription(parameters) {
             nextButton.innerText = "Next";
             nextButton.className = "btn btn-primary btn-large otree-btn-next"; // Add Bootstrap classes
             nextButton.style.float = "right"; // Float to the right
-            nextButton.disabled = this.correctAttempts === 0; // Disable initially
+            nextButton.disabled = this.correctAttempts <= 4; // Disable initially
 
             nextButton.onclick = () => {
                 this.loadBlurryTextFromCurrentRow(); // Load the next row when clicked

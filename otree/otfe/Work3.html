@@ -50,7 +50,7 @@ Third work period
         const transcriptionTask = new transcription({
             root: "transcriptionTask", // The ID of the HTML element where everything will be appended
             csvFile: "{% static 'html/letters.csv' %}", // The path to the CSV file
-            paymentPerSuccess: "25",
+            paymentPerSuccess: "{{ C.ROW_PAYMENT }}",
             startingRowIndex: 120, // Starting from the third row (index 2)
             maxMistakes: {{ C.MAX_MISTAKES }}, // Maximum number of mistakes allowed    
             submitCooldown: 10,

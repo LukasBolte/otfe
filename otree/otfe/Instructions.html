@@ -31,7 +31,7 @@ Instructions
 {{ include C.INSTRUCTIONS }}
  
 <p>
-    Here is a shortened example of the work task; please complete it. 
+    Here is a shortened example of the work task; please complete 5 transcriptions successfully to familiarize yourself with the task. 
 </p>
 
 <div id="transcriptionTask"></div>
@@ -60,17 +60,16 @@ Instructions
 <link rel="stylesheet" href="{% static 'css/transcription.css' %}">
 <script src="{% static 'js/transcription.js' %}"></script>
 
-  
     <script>
         const transcriptionTask = new transcription({
             root: "transcriptionTask", // The ID of the HTML element where everything will be appended
             csvFile: "{% static 'html/letters_training.csv' %}", // The path to the CSV file
-            paymentPerSuccess: "25",
+            paymentPerSuccess: "{{ C.ROW_PAYMENT }}",
             startingRowIndex: 0, // Starting from the third row (index 2)
             maxMistakes: {{ C.MAX_MISTAKES }}, // Maximum number of mistakes allowed
             submitCooldown: 10,
             mistakeMessage: 'This work task was not completed successfully. In the experiment, you would receive 0 cents. Please try again.',
-            successMessage: 'This work task was completed successfully. In the experiment, you would receive 25 cents. Please click "Next" to continue.',
+            successMessage: 'You correctly transcribed the text. In the experiment, you would receive ' + "{{ C.ROW_PAYMENT }}" + ' cents. Please complete a total of 5 transcriptions. After that, the "Next" button will be enabled, and you can continue.',
             cacheUniqueID: "training" + "{{ participant_code }}", // Unique ID for the cache
             work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
             blurLevel: "blur(3.5px)",

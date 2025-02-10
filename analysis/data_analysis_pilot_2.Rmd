@@ -210,8 +210,8 @@ ggsave(filename = file.path(output_folder, "attempts_distribution_by_treatment.p
 df <- df %>%
   rename(
     cq_1_mistakes = participant.cq_1_mistakes,
-    cq_2_mistakes = participant.cq_2_mistakes
-    #,attention_check = participant.attention_check
+    cq_2_mistakes = participant.cq_2_mistakes,
+    attention_check = participant.attention_check
   )
 
 mistake_columns <- c("cq_1_mistakes", "cq_2_mistakes")
@@ -234,6 +234,21 @@ mistake_columns <- c("cq_1_mistakes", "cq_2_mistakes")
              width = 8, height = 6)
     }
   }
+
+df[["attention_check"]] <- factor(df[["attention_check"]], levels = c("failed", "passed"))  # Ensure order
+
+  plot <- ggplot(df, aes(x = .data[["attention_check"]])) +
+    geom_bar(fill = "lightblue", color = "black") +
+    scale_x_discrete(drop = FALSE) +  # Ensure both "failed" and "passed" appear
+    labs(x = "Attention Check Result", y = "Frequency", title = "Frequency of Attention Check Results") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+  print(plot) # Ensure it appears in RMarkdown
+
+  ggsave(filename = file.path(output_folder, "attention_check_frequency.png"),
+         plot = plot,
+         width = 8, height = 6)
 ```
 
 ```{r}

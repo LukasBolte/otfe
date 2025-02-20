@@ -13,10 +13,13 @@ What do you think the tax will be?
 </p>  
 
 <p>
-  What would be your expected tax rate for a hypothetical fourth work period? You can review instructions by clicking the “Review Instructions.” 
+  What would be your expected tax rate for a hypothetical fourth work period? You can review instructions by clicking "Review Instructions.""
 </p>
 
 {{ formfields }}
+
+<p id="taxRateText1"><br><br></p>
+
 
 <div class="col-md-12 text-center">
     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#reviewModal">
@@ -55,8 +58,37 @@ What do you think the tax will be?
 
 {% block styles %}
 
+<style>
+  .valid-text {
+      color: blue;
+  }
+  .invalid-text {
+      color: red;
+  }
+</style>
+
 {% endblock %}
 
 {% block scripts %}
+
+<script>
+  function updateTaxRate(inputId, textId, period) {
+      document.getElementById(inputId).addEventListener('input', function() {
+          let taxRate = this.value;
+          let textElement = document.getElementById(textId);
+
+          // Check if the input is a valid number between 0 and 100
+          if (taxRate === "" || isNaN(taxRate) || taxRate < 0 || taxRate > 100) {
+              textElement.innerHTML = `<span class="invalid-text">Please enter a number between 0 and 100.</span><br><br>`;
+          } else {
+              textElement.innerHTML = 
+                  `<span class="valid-text">You entered <b>${taxRate}%</b> for the ${period} work period's tax rate. This means that you believe that you will face a <b>${taxRate}%</b> tax rate on your earnings from the ${period} work period.</span>`;
+          }
+      });
+  }
+
+  // Apply function to all three input fields
+  updateTaxRate("id_beliefs4", "taxRateText1", "hypothetical fourth");
+</script>
 
 {% endblock %}

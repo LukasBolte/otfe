@@ -29,7 +29,7 @@ df <- df %>% filter(participant.finished == 1)
 # Define the folder name variable
 folder_name <- "output_2025-02-07-pilot_4"
 
-quality_subsample <- TRUE
+quality_subsample <- FALSE
 output_file_name <- "report"
 
 if (quality_subsample) {
@@ -233,7 +233,8 @@ attempts_data <- data.frame(
 attempts_long <- tidyr::pivot_longer(attempts_data, 
                                      cols = c("Correct", "Incorrect"), 
                                      names_to = "AttemptType", 
-                                     values_to = "Average")
+                                     values_to = "Average") %>%
+  mutate(AttemptType = factor(AttemptType, levels = c("Incorrect", "Correct")))
 
 # Create stacked bar chart
 plot <- ggplot(attempts_long, aes(x = Task, y = Average, fill = AttemptType)) +
@@ -267,6 +268,10 @@ attempts_data <- df %>%
   ) %>%
   pivot_longer(cols = -participant.treatment, names_to = "Task_Attempt", values_to = "Average") %>%
   separate(Task_Attempt, into = c("Task", "AttemptType"), sep = "_") 
+
+# After pivoting
+attempts_data <- attempts_data %>%
+  mutate(AttemptType = factor(AttemptType, levels = c("Incorrect", "Correct")))
 
 # Convert participant.treatment to a factor with the specified order
 # Ensure all treatments are included, filling missing ones with NA

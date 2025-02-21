@@ -14,9 +14,9 @@ class C(BaseConstants):
     NAME_IN_URL = 'risk'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
-    APPROX_TIME = "35-45 minutes"
+    APPROX_TIME = "40-50 minutes"
     AVG_TOTAL_PAYMENT = "$16"
-    PARTICIPATION_FEE = 5
+    PARTICIPATION_FEE = 6.50
     ROW_PAYMENT = 15
     MAX_MISTAKES = 5
     BELIEF_BONUS = 1

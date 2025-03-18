@@ -149,7 +149,7 @@ average_payoff <- df %>%
   summarise(average = mean(participant.payoff, na.rm = TRUE)) %>%  # Calculate the mean, ignoring NA values
   pull(average)  # Extract the mean value
 
-participation_fee <- 5
+participation_fee <- 6.73
 # Print the average of Y
 print(average_payoff+participation_fee)
 

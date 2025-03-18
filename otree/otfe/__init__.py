@@ -100,18 +100,9 @@ class Player(BasePlayer):
         label='<strong>How many transcription tasks are you able to complete per work period?</strong>'
         )
 
-    survey_student_loans = models.IntegerField(
-        blank=True,
-        choices=[
-            (1, 'Definitely less willing'),
-            (2, 'Less willing'),
-            (3, 'No change'),
-            (4, 'More willing'),
-            (5, 'Definitely more willing'),
-        ],
-        label="Some administrations in the US have attempted to eliminate student debt among those with outstanding student loan debt. Assuming that such efforts had been successful, <b>would knowledge of this make you more or less willing to take on a student loan to afford university tuition for yourself or a family member?</b>",
-        widget=widgets.RadioSelectHorizontal,
-    )
+    survey_student_loans_with = models.IntegerField(min=0, max=100, label='<b>Probability of taking out a loan (%, between 0 and 100):</b>')
+
+    survey_student_loans_without = models.IntegerField(min=0, max=100, label='<b>Probability of taking out a loan (%, between 0 and 100):</b>')
 
     survey_pandemic = models.IntegerField(
         blank=True,
@@ -129,27 +120,35 @@ class Player(BasePlayer):
     survey_wealth_tax_savings = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Definitely save less'),
-            (2, 'Save less'),
-            (3, 'No change'),
-            (4, 'Save more'),
-            (5, 'Definitely save more'),
+            (1, 'Increase savings by 20% of income'),  
+            (2, 'Increase savings by 15% of income'),  
+            (3, 'Increase savings by 10% of income'),  
+            (4, 'Increase savings by 5% of income'),  
+            (5, 'No change in savings'),  
+            (6, 'Reduce savings by 5% of income'),  
+            (7, 'Reduce savings by 10% of income'),  
+            (8, 'Reduce savings by 15% of income'),  
+            (9, 'Reduce savings by 20% of income'),
         ],
         label="<p>Some countries have implemented one-time wealth taxes—taxes on real and/or financial assets that only apply for a single year.</p><p>For example, in 2013, the government of Cyprus decided to tax all domestic bank account deposits only a single time at a rate of up to 9.9%.</p><p>As another example, during the Coronavirus pandemic, the government of Argentina decided to tax high-wealth individuals at a one-time rate of 3.5% of their assessed wealth.</p><p>Consider the scenario where your government implemented one of these taxes in the recent past. To be clear, this kind of tax would only affect your <i>wealth</i> (e.g., stocks you own, money held in bank accounts, etc.). Your work pay would not be directly affected by the tax. </p><p> If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to increase or reduce the <i>amount you normally save out of your income?</i></b></p>",
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     survey_wealth_tax_consumption = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Definitely spend less'),
-            (2, 'Spend less'),
-            (3, 'No change'),
-            (4, 'Spend more'),
-            (5, 'Definitely spend more'),
+            (1, 'Increase spending by 20% of wealth'),  
+            (2, 'Increase spending by 15% of wealth'),  
+            (3, 'Increase spending by 10% of wealth'),  
+            (4, 'Increase spending by 5% of wealth'),  
+            (5, 'No change in spending'),  
+            (6, 'Reduce spending by 5% of wealth'),  
+            (7, 'Reduce spending by 10% of wealth'),  
+            (8, 'Reduce spending by 15% of wealth'),  
+            (9, 'Reduce spending by 20% of wealth')  
         ],
         label="<p>If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to increase or reduce the amount you normally <I>spend/consume out of your existing savings/wealth?</i></b></p>",
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     survey_wealth_tax_personal_savings = models.IntegerField(
@@ -207,63 +206,98 @@ class Player(BasePlayer):
     survey_tax_rates_1 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Very unlikely',),
-            (2, 'Unlikely'),
-            (3, 'Likely'),
-            (4, 'Very likely'),
+            (1, 'Impossible (0%)'),  
+            (2, 'Extremely unlikely (1-5%)'),  
+            (3, 'Highly unlikely (6-10%)'),  
+            (4, 'Unlikely (11-20%)'),  
+            (5, 'Uncertain (21-40%)'),  
+            (6, 'Somewhat likely (41-60%)'),  
+            (7, 'More than likely (61-100%)')  
             ],
-        label='<p>The above table shows the US personal income tax schedule for a single filer in 2024. <b>What do you think is the probability that the US personal income tax rate schedule will substantially change...</b></p><p><b>...in the next 3 months?</b></p>',
-        widget=widgets.RadioSelectHorizontal,
+        label='<p><b>...in the next 3 months?</b></p>',
+        widget=widgets.RadioSelect,
     )
 
     survey_tax_rates_2 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Very unlikely',),
-            (2, 'Unlikely'),
-            (3, 'Likely'),
-            (4, 'Very likely'),
+            (1, 'Impossible (0%)'),  
+            (2, 'Extremely unlikely (1-5%)'),  
+            (3, 'Highly unlikely (6-10%)'),  
+            (4, 'Unlikely (11-20%)'),  
+            (5, 'Uncertain (21-40%)'),  
+            (6, 'Somewhat likely (41-60%)'),  
+            (7, 'More than likely (61-100%)')  
             ],
         label='<p><b>...in the next 6 months?</b></p>',
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     survey_tax_rates_3 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Very unlikely',),
-            (2, 'Unlikely'),
-            (3, 'Likely'),
-            (4, 'Very likely'),
+            (1, 'Impossible (0%)'),  
+            (2, 'Extremely unlikely (1-5%)'),  
+            (3, 'Highly unlikely (6-10%)'),  
+            (4, 'Unlikely (11-20%)'),  
+            (5, 'Uncertain (21-40%)'),  
+            (6, 'Somewhat likely (41-60%)'),  
+            (7, 'More than likely (61-100%)')  
             ],
         label='<p><b>...in the next year?</b></p>',
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     survey_tax_rates_4 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Very unlikely',),
-            (2, 'Unlikely'),
-            (3, 'Likely'),
-            (4, 'Very likely'),
+            (1, 'Impossible (0%)'),  
+            (2, 'Extremely unlikely (1-5%)'),  
+            (3, 'Highly unlikely (6-10%)'),  
+            (4, 'Unlikely (11-20%)'),  
+            (5, 'Uncertain (21-40%)'),  
+            (6, 'Somewhat likely (41-60%)'),  
+            (7, 'More than likely (61-100%)')  
             ],
         label='<p><b>...in the next 5 years?</b></p>',
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     survey_tax_rates_5 = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Very unlikely',),
-            (2, 'Unlikely'),
-            (3, 'Likely'),
-            (4, 'Very likely'),
+            (1, 'Impossible (0%)'),  
+            (2, 'Extremely unlikely (1-5%)'),  
+            (3, 'Highly unlikely (6-10%)'),  
+            (4, 'Unlikely (11-20%)'),  
+            (5, 'Uncertain (21-40%)'),  
+            (6, 'Somewhat likely (41-60%)'),  
+            (7, 'More than likely (61-100%)')  
             ],
         label='<p><b>...in the next 10 years?</b></p>',
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
+    annual_income = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Less than $10,000'),
+            (2, '$10,000 - $19,999'),
+            (3, '$20,000 - $29,999'),
+            (4, '$30,000 - $39,999'),
+            (5, '$40,000 - $49,999'),
+            (6, '$50,000 - $59,999'),
+            (7, '$60,000 - $69,999'),
+            (8, '$70,000 - $79,999'),
+            (9, '$80,000 - $89,999'),
+            (10, '$90,000 - $99,999'),
+            (11, '$100,000 - $149,999'),
+            (12, 'More than $150,000')
+        ],
+        label='<p><b>What is your current annual income (in USD)?</b></p>',
+        widget=widgets.RadioSelect,
+    )
+    
     feedback = models.LongStringField(label='<strong>Feedback:</strong>', blank=True)
     
     feedback_difficulty = models.IntegerField(label="<b>How clear were the instructions?</b> <br>Please answer on a scale of 1 to 10, with 10 being the clearest.",
@@ -566,29 +600,44 @@ class Transition4(Page):
 
 class Survey(Page):
     form_model = 'player'
-    form_fields = ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings']
+    form_fields = ['survey_student_loans_with', 'survey_student_loans_without', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_student_loans', 'survey_pandemic', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings']:
+            for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages
         
 class Survey2(Page):
     form_model = 'player'
-    form_fields = [ 'survey_repatriation', 'survey_one_time_policies','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5']
+    form_fields = [ 'survey_repatriation', 'survey_one_time_policies']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_repatriation', 'survey_one_time_policies','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5']:
+            for field_name in ['survey_repatriation', 'survey_one_time_policies']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages
+        
+
+class Survey3(Page):
+    form_model = 'player'
+    form_fields = ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5', 'annual_income']
+
+    @staticmethod
+    def error_message(player, values):
+        if not player.session.config['development']:
+            error_messages = dict()
+            for field_name in ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5', 'annual_income']:
+                if values[field_name] is None:
+                    error_messages[field_name] = 'Please answer the question'
+            return error_messages
+
 
 class Outcome(Page):
 
@@ -703,6 +752,7 @@ page_sequence = [
     Transition4,
     Survey,
     Survey2,
+    Survey3,
     Outcome,
     Feedback,
     Finished,

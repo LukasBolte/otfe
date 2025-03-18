@@ -14,24 +14,20 @@ Survey
         <b>Question 1</b>
     </p>
     
-    {{ formfield 'survey_student_loans' }}
+    <p>Some administrations in the US have attempted to eliminate student debt among those with outstanding student loan debt. Assuming that such efforts had been <i>successful</i>, <b>what is the probability you would be taking out a student loand to afford university tuition for yourself or a family member?</b></p>
+
+    {{ formfield 'survey_student_loans_with' }}
     
+    <p>Assuming that such efforts had been <i>unsuccessful</i>, <b>what is the probability you would be taking out a student loand to afford university tuition for yourself or a family member?</b></p>
+
+    {{ formfield 'survey_student_loans_without' }}
+
     <hr>
 
     <br>
 
     <p class="question">
         <b>Question 2</b>
-    </p>
-    
-    {{ formfield 'survey_pandemic' }}
-    
-    <hr>
-
-    <br>
-
-    <p class="question">
-        <b>Question 3</b>
     </p>
     
     {{ formfield 'survey_wealth_tax_savings' }}

@@ -14,11 +14,27 @@ Survey
         <b>Question 1</b>
     </p>
     
-    <p>Past US presidential administrations and campaigns in the US have announced their intention to eliminate student debt among those with outstanding student loan debt. Assuming that such efforts had been <i>successful</i>, <b>what is the probability you would be taking out a student loan to afford university tuition for yourself or a family member?</b></p>
+    <p>
+        Suppose you or a family member were attending university in the near future.
+    </p>
+
+    {{ formfield 'survey_student_loans_with_likert' }}
+
+
 
     {{ formfield 'survey_student_loans_with' }}
-    
-    <p>Assuming that such efforts had been <i>unsuccessful</i>, <b>what is the probability you would be taking out a student loand to afford university tuition for yourself or a family member?</b></p>
+
+    <p>
+        Past US presidential administrations and campaigns have announced their intention to eliminate student debt <i>only</i> among those with outstanding student loan debt. These plans would not, on their own, have eliminated student debt entirely for all students in the future.
+    </p>
+
+    <p>
+        Continue supposing that you or a family member were attending university in the near future.
+    </p>
+
+    {{ formfield 'survey_student_loans_without_likert' }}
+
+
 
     {{ formfield 'survey_student_loans_without' }}
 

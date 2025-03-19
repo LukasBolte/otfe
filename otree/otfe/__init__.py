@@ -100,9 +100,33 @@ class Player(BasePlayer):
         label='<strong>How many transcription tasks are you able to complete per work period?</strong>'
         )
 
-    survey_student_loans_with = models.IntegerField(min=0, max=100, label='<b>Probability of taking out a loan (%, between 0 and 100):</b>')
+    survey_student_loans_with = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition?</b>')
 
-    survey_student_loans_without = models.IntegerField(min=0, max=100, label='<b>Probability of taking out a loan (%, between 0 and 100):</b>')
+    survey_student_loans_without = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition?</b>')
+
+    survey_student_loans_with_likert = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
+            ],
+        label='<b>How likely would you take out a student loan to afford university tuition for yourself or a family member?</b>',
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    survey_student_loans_without_likert = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Very unlikely',),
+            (2, 'Unlikely'),
+            (3, 'Likely'),
+            (4, 'Very likely'),
+            ],
+        label='<p>Assuming that such efforts to cancel pre-existing, outstanding student had been successful in the recent past, <b>how likely would you take out a student loan to afford university tuition for yourself or a family member?</b></p>',
+        widget=widgets.RadioSelectHorizontal,
+    )
 
     survey_pandemic = models.IntegerField(
         blank=True,
@@ -600,13 +624,13 @@ class Transition4(Page):
 
 class Survey(Page):
     form_model = 'player'
-    form_fields = ['survey_student_loans_with', 'survey_student_loans_without', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings']
+    form_fields = ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert','survey_wealth_tax_consumption', 'survey_wealth_tax_savings']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_wealth_tax_consumption', 'survey_wealth_tax_savings']:
+            for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert','survey_wealth_tax_consumption', 'survey_wealth_tax_savings']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages

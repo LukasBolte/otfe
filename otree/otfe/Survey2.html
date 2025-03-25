@@ -1,5 +1,5 @@
 {% block title %}
-Survey
+Question 2
 {% endblock %}
 
 {% block content %}
@@ -8,14 +8,27 @@ Survey
     <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
 {{ endif }}
 
+   
+<p>
+    Some countries have implemented one-time wealth taxes—taxes on real and/or financial assets that only apply for a single year.
+</p>
 
+<p>
+    For example, in 2013, the government of Cyprus decided to implement a one-time tax on all domestic bank account deposits above a fixed amount at a rate of up to 9.9%. 
+</p>
 
-    <p class="question">
-        <b>Question 3</b>
-    </p>
-    
-    {{ formfield 'survey_repatriation' }}
+<p>
+    As another example, during the Coronavirus pandemic, the government of Argentina decided to implement a one-time wealth tax on high-wealth individuals at a rate of 3.5% of their assessed wealth.
+</p>
 
+<p>
+    Consider the scenario where your government implemented one of these taxes in the recent past. To be clear, this kind of tax would only affect your <i>wealth</i> (e.g., stocks you own, money held in bank accounts, etc.). Your work pay would not be directly affected by the tax.
+</p>
+
+</p>
+{{ formfield 'survey_wealth_tax_savings' }}
+
+{{ formfield 'survey_wealth_tax_savings_number' }}
 
 <button style="float: right" class="otree-btn-next btn btn-primary">Submit</button>
 
@@ -33,4 +46,37 @@ Survey
 
 {% block scripts %}
 
+<script>
+    $(document).ready(function() {
+        // Disable input field initially
+        $('#id_survey_wealth_tax_savings_number').prop('disabled', true);
+
+        $('input[name="survey_wealth_tax_savings"]').change(function() {
+            var selectedValue = $(this).val();
+            var labelText = "";
+
+            // Enable input field for selected options 1, 2, 4, 5
+            if (selectedValue === "1" || selectedValue === "2" || selectedValue === "4" || selectedValue === "5") {
+                $('#id_survey_wealth_tax_savings_number').prop('disabled', false);
+            } else if (selectedValue === "3") {
+                $('#id_survey_wealth_tax_savings_number').prop('disabled', true).val(0);
+            } else{
+                // Disable input field for other options
+                $('#id_survey_wealth_tax_savings_number').prop('disabled', true);
+            }
+
+            // Set label text based on selection
+            if (selectedValue === "1" || selectedValue === "2") {
+                labelText = "You indicated that you would spend/consume <i>less</i>. <b>By how much (in USD) would you decrease your monthly spending/consumption out of your existing savings/wealth?</b>";
+            } else if (selectedValue === "3") {
+                labelText = "<i>Proceed to the next question.</i>";
+            } else if (selectedValue === "4" || selectedValue === "5") {
+                labelText = "You indicated that you would spend/consume <i>more</i>. <b>By how much (in USD) would you increase your monthly spending/consumption out of your existing savings/wealth?</b>";
+            }
+
+            // Update the label text using innerHTML
+            $('label[for="id_survey_wealth_tax_savings_number"]').get(0).innerHTML = labelText;
+        });
+    });
+</script>
 {% endblock %}

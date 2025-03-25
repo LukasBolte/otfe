@@ -614,21 +614,43 @@ class Transition4(Page):
 
 class Survey(Page):
     form_model = 'player'
-    form_fields = ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert', 'survey_wealth_tax_savings','survey_wealth_tax_savings_number']
+    form_fields = ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']
 
     @staticmethod
     def error_message(player, values):
 
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert', 'survey_wealth_tax_savings','survey_wealth_tax_savings_number']:
+            for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']:
+                if values[field_name] is None:
+                    error_messages[field_name] = 'Please answer the question'
+        return error_messages
+    
+
+
+
+
+class Survey2(Page):
+    form_model = 'player'
+    form_fields = ['survey_wealth_tax_savings','survey_wealth_tax_savings_number']
+
+    @staticmethod
+    def error_message(player, values):
+
+        if not player.session.config['development']:
+            error_messages = dict()
+            for field_name in ['survey_wealth_tax_savings','survey_wealth_tax_savings_number']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
                     if values['survey_wealth_tax_savings'] == 3:
                         del error_messages['survey_wealth_tax_savings_number']
         return error_messages
+    
+
+
+
         
-class Survey2(Page):
+class Survey3(Page):
     form_model = 'player'
     form_fields = [ 'survey_repatriation']
 
@@ -642,18 +664,35 @@ class Survey2(Page):
             return error_messages
         
 
-class Survey3(Page):
+
+class Survey4(Page):
     form_model = 'player'
-    form_fields = ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob', 'annual_income']
+    form_fields = ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob', 'annual_income']:
+            for field_name in ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages
+
+
+
+class Survey5(Page):
+    form_model = 'player'
+    form_fields = ['annual_income']
+
+    @staticmethod
+    def error_message(player, values):
+        if not player.session.config['development']:
+            error_messages = dict()
+            for field_name in ['annual_income']:
+                if values[field_name] is None:
+                    error_messages[field_name] = 'Please answer the question'
+            return error_messages
+        
 
 
 class Outcome(Page):
@@ -770,6 +809,8 @@ page_sequence = [
     Survey,
     Survey2,
     Survey3,
+    Survey4,
+    Survey5,
     Outcome,
     Feedback,
     Finished,

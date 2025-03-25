@@ -1,0 +1,61 @@
+{% block title %}
+Question 4
+{% endblock %}
+
+{% block content %}
+
+{{ if session.config.development }}
+    <button class="btn btn-danger otree-btn-next" style="float: right;">Skip</button>
+{{ endif }}
+
+<div style="text-align: center;">
+    <img src="{% static 'img/taxbrackets.jpg' %}" alt="Image" style="width: 80%; height: auto; margin-right: 5px;">
+</div>
+
+<p>The above table shows the US personal income tax schedule for a single filer in 2024. <b>What do you think is the probability that the US personal income tax rate schedule will substantially change...</b></p>
+        
+<div class="row">
+    <div class="col-md-4">
+        {{ formfield 'survey_tax_rates_1' }}
+        {{ formfield 'survey_tax_rates_1_prob' }}
+    </div>
+    <div class="col-md-4">
+        {{ formfield 'survey_tax_rates_2' }}
+        {{ formfield 'survey_tax_rates_2_prob' }}
+    </div>
+    <div class="col-md-4">
+        {{ formfield 'survey_tax_rates_3' }}
+        {{ formfield 'survey_tax_rates_3_prob' }}
+    </div>
+</div>
+
+<hr> <!-- This adds a line between the two rows -->
+
+<div class="row">
+    <div class="col-md-4">
+        {{ formfield 'survey_tax_rates_4' }}
+        {{ formfield 'survey_tax_rates_4_prob' }}
+    </div>
+    <div class="col-md-4">
+        {{ formfield 'survey_tax_rates_5' }}
+        {{ formfield 'survey_tax_rates_5_prob' }}
+    </div>
+</div>
+
+<button style="float: right" class="otree-btn-next btn btn-primary">Submit</button>
+
+{% endblock %}
+
+{% block styles %}
+
+<style>
+    .question {
+      font-size: 1.5em; /* Adjust this value as needed */
+    }
+  </style>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

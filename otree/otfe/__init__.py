@@ -624,7 +624,7 @@ class Survey(Page):
             for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
-        return error_messages
+            return error_messages
     
 
 
@@ -644,7 +644,7 @@ class Survey2(Page):
                     error_messages[field_name] = 'Please answer the question'
                     if values['survey_wealth_tax_savings'] == 3:
                         del error_messages['survey_wealth_tax_savings_number']
-        return error_messages
+            return error_messages
     
 
 

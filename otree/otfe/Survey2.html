@@ -48,34 +48,37 @@ Question 2
 
 <script>
     $(document).ready(function() {
-        // Disable input field initially
-        $('#id_survey_wealth_tax_savings_number').prop('disabled', true);
+        var selectedValue = $('input[name="survey_wealth_tax_savings"]:checked').val(); // Get the initially selected value
 
-        $('input[name="survey_wealth_tax_savings"]').change(function() {
-            var selectedValue = $(this).val();
+        function updateFieldState(value) {
             var labelText = "";
 
-            // Enable input field for selected options 1, 2, 4, 5
-            if (selectedValue === "1" || selectedValue === "2" || selectedValue === "4" || selectedValue === "5") {
-                $('#id_survey_wealth_tax_savings_number').prop('disabled', false);
-            } else if (selectedValue === "3") {
+            if (value === "1" || value === "2" || value === "4" || value === "5") {
+                $('#id_survey_wealth_tax_savings_number').prop('disabled', false).val('');
+            } else if (value === "3") {
                 $('#id_survey_wealth_tax_savings_number').prop('disabled', true).val(0);
-            } else{
-                // Disable input field for other options
+            } else {
                 $('#id_survey_wealth_tax_savings_number').prop('disabled', true);
             }
 
             // Set label text based on selection
-            if (selectedValue === "1" || selectedValue === "2") {
+            if (value === "1" || value === "2") {
                 labelText = "You indicated that you would spend/consume <i>less</i>. <b>By how much (in USD) would you decrease your monthly spending/consumption out of your existing savings/wealth?</b>";
-            } else if (selectedValue === "3") {
+            } else if (value === "3") {
                 labelText = "<i>Proceed to the next question.</i>";
-            } else if (selectedValue === "4" || selectedValue === "5") {
+            } else if (value === "4" || value === "5") {
                 labelText = "You indicated that you would spend/consume <i>more</i>. <b>By how much (in USD) would you increase your monthly spending/consumption out of your existing savings/wealth?</b>";
             }
 
-            // Update the label text using innerHTML
             $('label[for="id_survey_wealth_tax_savings_number"]').get(0).innerHTML = labelText;
+        }
+
+        // Run on page load
+        updateFieldState(selectedValue);
+
+        // Run when selection changes
+        $('input[name="survey_wealth_tax_savings"]').change(function() {
+            updateFieldState($(this).val());
         });
     });
 </script>

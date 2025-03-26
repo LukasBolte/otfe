@@ -777,7 +777,15 @@ class Feedback(Page):
         pass
 
 class Finished(Page):
-    pass
+    @staticmethod
+    def vars_for_template(player):
+
+       
+
+        total_payment = player.participant.payoff + C.PARTICIPATION_FEE
+        return {
+            'total_payment': total_payment
+        }
 
 class Redirect(Page):
     pass

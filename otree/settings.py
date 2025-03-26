@@ -24,7 +24,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0, doc=""
 )
 
-PARTICIPANT_FIELDS = ['treatment','start_time', 'end_time','finished','browser','attention_check','cq_1_mistakes','cq_2_mistakes','attempts_training','attempts_work_1','attempts_work_2','attempts_work_3','which_belief','beliefs1','beliefs2','beliefs3','beliefs1_3','beliefs1_2','beliefs2_3','beliefs4','belief_bonus','feedback','feedback_difficulty','feedback_understanding','feedback_satisfied','feedback_pay']
+PARTICIPANT_FIELDS = ['treatment','start_time', 'end_time','finished','browser','attention_check','cq_1_mistakes','cq_2_mistakes','cq_3_mistakes','attempts_training','attempts_work_1','attempts_work_2','attempts_work_3','which_belief','beliefs1','beliefs2','beliefs3','beliefs1_3','beliefs1_2','beliefs2_3','beliefs4','belief_bonus','feedback','feedback_difficulty','feedback_understanding','feedback_satisfied','feedback_pay']
 SESSION_FIELDS = ['prolific_completion_url']
 
 # ISO-639 code

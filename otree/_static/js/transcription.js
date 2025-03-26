@@ -118,7 +118,10 @@ function transcription(parameters) {
         const reminderDiv = document.createElement('div');
         reminderDiv.style.marginTop = "5px"; // Add some space above the reminder
         reminderDiv.innerHTML = "<b>Reminder:</b> There is no obligation to work for the full " + this.work_period_length + "-minute work period, but you will only be able to proceed after the " + this.work_period_length + "-minute work period is over. You can complete as many transcriptions as you like during the work period."; 
-        container.appendChild(reminderDiv); // Add reminder text to the container
+        if (!this.training) {
+            container.appendChild(reminderDiv); // Add reminder text to the container
+        }
+        
 
         // 3. Create the blurry text display
         const blurryTextDiv = document.createElement('div');

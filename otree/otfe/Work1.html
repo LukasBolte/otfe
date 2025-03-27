@@ -47,29 +47,30 @@ First work period
 
   
     <script>
-        const transcriptionTask = new transcription({
-            root: "transcriptionTask", // The ID of the HTML element where everything will be appended
-            csvFile: "{% static 'html/letters.csv' %}", // The path to the CSV file
-            paymentPerSuccess: "{{ C.ROW_PAYMENT }}",
-            startingRowIndex: 0, // Starting from the third row (index 2)
-            maxMistakes: {{ C.MAX_MISTAKES }}, // Maximum number of mistakes allowed
-            submitCooldown: 10,
-            mistakeMessage: 'Unfortunately, the transcription had too many mistakes to be accepted.',
-            successMessage: "The transcription was correct!",
-            cacheUniqueID: "work_1" + "{{ participant_code }}", // Unique ID for the cache
-            work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
-            blurLevel: "blur(3.5px)",
-            varName: "data_dummy", // Variable name for the cache
-            training: false,    
-            // Array of objects for the entire Greek alphabet (lowercase)
-            keyboardLetters: [
-                { char: "α" }, { char: "β" }, { char: "γ" }, { char: "δ" }, { char: "ε" },
-                { char: "ζ" }, { char: "η" }, { char: "θ" }, { char: "ι" }, { char: "κ" },
-                { char: "λ" }, { char: "μ" }, { char: "ν" }, { char: "ξ" }, { char: "ο" },
-                { char: "π" }, { char: "ρ" }, { char: "σ" }, { char: "τ" }, { char: "υ" },
-                { char: "φ" }, { char: "χ" }, { char: "ψ" }, { char: "ω" }, { char: "." }, 
-                { char: "," }  
-            ]   
+        document.addEventListener("DOMContentLoaded", function () {
+            const transcriptionTask = new transcription({
+                root: "transcriptionTask",
+                csvFile: "{% static 'html/letters.csv' %}",
+                paymentPerSuccess: "{{ C.ROW_PAYMENT }}",
+                startingRowIndex: 0,
+                maxMistakes: {{ C.MAX_MISTAKES }},
+                submitCooldown: 10,
+                mistakeMessage: 'Unfortunately, the transcription had too many mistakes to be accepted.',
+                successMessage: "The transcription was correct!",
+                cacheUniqueID: "work_1" + "{{ participant_code }}",
+                work_period_length: "{{ C.WORK_PERIOD_LENGTH }}",
+                blurLevel: "blur(3.5px)",
+                varName: "data_dummy",
+                training: false,
+                keyboardLetters: [
+                    { char: "α" }, { char: "β" }, { char: "γ" }, { char: "δ" }, { char: "ε" },
+                    { char: "ζ" }, { char: "η" }, { char: "θ" }, { char: "ι" }, { char: "κ" },
+                    { char: "λ" }, { char: "μ" }, { char: "ν" }, { char: "ξ" }, { char: "ο" },
+                    { char: "π" }, { char: "ρ" }, { char: "σ" }, { char: "τ" }, { char: "υ" },
+                    { char: "φ" }, { char: "χ" }, { char: "ψ" }, { char: "ω" }, { char: "." }, 
+                    { char: "," }  
+                ]   
+            });
         });
     </script>
 

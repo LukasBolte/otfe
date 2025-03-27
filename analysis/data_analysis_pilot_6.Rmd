@@ -1,0 +1,524 @@
+---
+title: "OTFE"
+date: "March 2025"
+knit: (function(inputFile, encoding) {
+    rmarkdown::render(inputFile,
+                     encoding=encoding,
+                     output_file='pilot_5') })
+output: html_document
+---
+
+This document may be used to analyze the data. For now, it just loads the data.
+
+# Getting started: Importing the raw data, loading libraries, and checking all variables are populated.
+
+```{r}
+# Set the working directory
+
+library(tidyverse)
+library(purrr)
+library(jsonlite)
+library(extrafont)
+library(factoextra)
+library(GGally)
+
+csv_file <- "data/all_apps_wide_2025-03-27.csv"
+df <- read_csv(csv_file) 
+df <- df %>% filter(participant.finished == 1)
+
+# Define the folder name variable
+folder_name <- "output_2025-02-21-pilot_6"
+
+quality_subsample <- FALSE
+output_file_name <- "report"
+
+if (quality_subsample) {
+  folder_name <- paste0(folder_name, "_quality_subsample")
+  output_file_name <- paste0(output_file_name, "_quality_subsample")
+}
+
+output_folder <- paste0("output/", folder_name)
+# Create the new folder in the working directory if it doesn't exist
+if (!dir.exists(output_folder)) {
+  dir.create(output_folder)
+}
+
+
+```
+
+```{r}
+df <- df %>%
+  rename(
+    cq_1_mistakes = participant.cq_1_mistakes,
+    cq_2_mistakes = participant.cq_2_mistakes,
+    cq_3_mistakes = participant.cq_3_mistakes,
+    attention_check = participant.attention_check
+  )
+
+mistake_columns <- c("cq_1_mistakes", "cq_2_mistakes", "cq_3_mistakes")
+  for (col in mistake_columns) {
+    if (col %in% names(df)) {
+      df[[col]] <- factor(ifelse(df[[col]] >= 5, "5 and greater", as.character(df[[col]])),
+                           levels = c("0", "1", "2", "3", "4", "5 and greater"))
+      
+      plot <- ggplot(df, aes(x = .data[[col]])) +
+        geom_bar(fill = "lightcoral", color = "black") +
+        scale_x_discrete(drop = FALSE) +  # Ensure all levels appear
+        labs(x = "Number of Mistakes", y = "Frequency", title = paste("Frequency of", col)) +
+        theme_minimal() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      
+      print(plot) # Ensure it appears in RMarkdown
+      
+      ggsave(filename = file.path(output_folder, paste0(col, "_frequency.png")),
+             plot = plot,
+             width = 8, height = 6)
+    }
+  }
+
+df[["attention_check"]] <- factor(df[["attention_check"]], levels = c("failed", "passed"))  # Ensure order
+
+  plot <- ggplot(df, aes(x = .data[["attention_check"]])) +
+    geom_bar(fill = "lightblue", color = "black") +
+    scale_x_discrete(drop = FALSE) +  # Ensure both "failed" and "passed" appear
+    labs(x = "Attention Check Result", y = "Frequency", title = "Frequency of Attention Check Results") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+  print(plot) # Ensure it appears in RMarkdown
+
+  ggsave(filename = file.path(output_folder, "attention_check_frequency.png"),
+         plot = plot,
+         width = 8, height = 6)
+  
+  
+
+```
+
+```{r}
+df <- df %>%
+  mutate(
+    high_quality = ifelse(attention_check == "passed" & cq_1_mistakes == 0 & cq_2_mistakes == 0 & cq_3_mistakes == 0, 1, 0)
+  )
+
+if (quality_subsample) {
+  df <- df %>% filter(high_quality == 1)
+}
+```
+
+
+```{r}
+# Plot duration
+df <- df %>%
+  mutate(
+    # Convert Duration..in.seconds. from string to numeric (seconds)
+    duration_seconds = participant.end_time - participant.start_time,
+    # Create duration_minutes by dividing duration_seconds by 60
+    duration_minutes = duration_seconds / 60
+  ) 
+
+# Print the average duration
+# Calculate the average of variable Y
+average_duration <- df %>%
+  summarise(average = mean(duration_minutes, na.rm = TRUE)) %>%  # Calculate the mean, ignoring NA values
+  pull(average)  # Extract the mean value
+
+# Print the average of Y
+print(average_duration)
+
+# Create the plot for duration_minutes and save it
+plot <- df %>%
+  ggplot(aes(x = duration_minutes)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Distribution of Duration in Minutes",
+       x = "Duration (minutes)",
+       y = "Frequency") +
+  theme_minimal()
+
+print(plot)
+# Save the plot to the specified folder
+ggsave(filename = file.path(output_folder, "duration_minutes_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+```
+
+```{r}
+
+# Print the average payment
+# Calculate the average of variable Y
+average_payoff <- df %>%
+  summarise(average = mean(participant.payoff, na.rm = TRUE)) %>%  # Calculate the mean, ignoring NA values
+  pull(average)  # Extract the mean value
+
+participation_fee <- 6.73
+# Print the average of Y
+print(average_payoff+participation_fee)
+
+# Create the plot for duration_minutes and save it
+plot <- df %>%
+  ggplot(aes(x = participant.payoff + participation_fee)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Distribution of Payoff",
+       x = "Payoff ($)",
+       y = "Frequency") +
+  theme_minimal()
+
+print(plot)
+# Save the plot to the specified folder
+ggsave(filename = file.path(output_folder, "payoff_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+```
+
+```{r}
+
+treatment_list <- list("C-NoInfo", "C-Info", "T1-T-NoInfo", "T1-T-Info", "T1-P", "T2-T")
+
+
+
+# Define the levels in the order you want them to appear
+df$participant.treatment <- factor(df$participant.treatment, 
+                                   levels = treatment_list)
+
+# Create the bar chart ensuring all treatment groups appear
+plot <- ggplot(df, aes(x = participant.treatment)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  scale_x_discrete(drop = FALSE) +  # Ensures all factor levels are displayed
+  labs(x = "Participant Treatment", y = "Frequency", title = "Frequency of Each Treatment Group") +
+  theme_minimal()
+
+print(plot)
+
+# Save the plot to the specified folder
+ggsave(filename = file.path(output_folder, "treatment_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+
+```
+
+```{r}
+
+# Parse the JSON in each row and create new columns for correctAttempts and incorrectAttempts
+json_columns <- c("participant.attempts_training", "participant.attempts_work_1", 
+                  "participant.attempts_work_2", "participant.attempts_work_3")
+prefixes <- c("training", "work_1", "work_2", "work_3")
+
+# Loop over the columns and prefixes
+for (i in seq_along(json_columns)) {
+  column <- json_columns[i]
+  prefix <- prefixes[i]
+  
+  # Parse JSON and create new columns for correctAttempts and incorrectAttempts with the specified prefix
+  df <- df %>%
+    mutate(parsed_json = map(!!sym(column), ~ fromJSON(.))) %>%
+    mutate(
+      !!paste0(prefix, "_correctAttempts") := map_int(parsed_json, "correctAttempts"),
+      !!paste0(prefix, "_incorrectAttempts") := map_int(parsed_json, "incorrectAttempts")
+    ) 
+}
+
+# Calculate averages for correct and incorrect attempts
+attempts_data <- data.frame(
+  Task = c("Training", "Work 1", "Work 2", "Work 3"),
+  Correct = c(mean(df$training_correctAttempts, na.rm = TRUE),
+              mean(df$work_1_correctAttempts, na.rm = TRUE),
+              mean(df$work_2_correctAttempts, na.rm = TRUE),
+              mean(df$work_3_correctAttempts, na.rm = TRUE)),
+  Incorrect = c(mean(df$training_incorrectAttempts, na.rm = TRUE),
+                mean(df$work_1_incorrectAttempts, na.rm = TRUE),
+                mean(df$work_2_incorrectAttempts, na.rm = TRUE),
+                mean(df$work_3_incorrectAttempts, na.rm = TRUE))
+)
+
+# Convert data to long format for stacked bars
+attempts_long <- tidyr::pivot_longer(attempts_data, 
+                                     cols = c("Correct", "Incorrect"), 
+                                     names_to = "AttemptType", 
+                                     values_to = "Average") %>%
+  mutate(AttemptType = factor(AttemptType, levels = c("Incorrect", "Correct")))
+
+# Create stacked bar chart
+plot <- ggplot(attempts_long, aes(x = Task, y = Average, fill = AttemptType)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = c("Correct" = "skyblue", "Incorrect" = "red")) +
+  labs(x = "Task", y = "Average Attempts", title = "Average Correct and Incorrect Attempts per Task") +
+  theme_minimal()
+
+print(plot)
+
+# Save the plot
+ggsave(filename = file.path(output_folder, "attempts_distribution.png"),
+       plot = plot,
+       width = 8, height = 6)
+
+
+
+
+# Calculate averages for correct and incorrect attempts per treatment group
+attempts_data <- df %>%
+  group_by(participant.treatment) %>%
+  summarise(
+    Training_Correct = mean(training_correctAttempts, na.rm = TRUE),
+    Training_Incorrect = mean(training_incorrectAttempts, na.rm = TRUE),
+    Work1_Correct = mean(work_1_correctAttempts, na.rm = TRUE),
+    Work1_Incorrect = mean(work_1_incorrectAttempts, na.rm = TRUE),
+    Work2_Correct = mean(work_2_correctAttempts, na.rm = TRUE),
+    Work2_Incorrect = mean(work_2_incorrectAttempts, na.rm = TRUE),
+    Work3_Correct = mean(work_3_correctAttempts, na.rm = TRUE),
+    Work3_Incorrect = mean(work_3_incorrectAttempts, na.rm = TRUE)
+  ) %>%
+  pivot_longer(cols = -participant.treatment, names_to = "Task_Attempt", values_to = "Average") %>%
+  separate(Task_Attempt, into = c("Task", "AttemptType"), sep = "_") 
+
+# After pivoting
+attempts_data <- attempts_data %>%
+  mutate(AttemptType = factor(AttemptType, levels = c("Incorrect", "Correct")))
+
+# Convert participant.treatment to a factor with the specified order
+# Ensure all treatments are included, filling missing ones with NA
+attempts_data <- attempts_data %>%
+  complete(participant.treatment = factor(participant.treatment, levels = treatment_list), 
+           Task, AttemptType, fill = list(Average = 0)) 
+# Create stacked bar chart by participant.treatment
+plot <- ggplot(attempts_data, aes(x = Task, y = Average, fill = AttemptType)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  facet_wrap(~ participant.treatment) +  # Create separate plots for each treatment
+  scale_fill_manual(values = c("Correct" = "skyblue", "Incorrect" = "red")) +
+  labs(x = "Task", y = "Average Attempts", title = "Average Correct and Incorrect Attempts by Treatment") +
+  theme_minimal()
+
+print(plot)
+
+# Save the plot
+ggsave(filename = file.path(output_folder, "attempts_distribution_by_treatment.png"),
+       plot = plot,
+       width = 10, height = 6)
+```
+
+
+
+```{r}
+belief_columns <- c("beliefs1", "beliefs1_2", "beliefs1_3", "beliefs2", "beliefs2_3", "beliefs3", "beliefs4")
+
+# Remove the 'participant.' prefix only from specified columns
+df <- df %>%
+  rename_with(~ gsub("^participant\\.", "", .), 
+              .cols = starts_with("participant.") & ends_with(belief_columns))
+
+survey_columns <- c('survey_student_loans_with_likert', 'survey_student_loans_without_likert','survey_student_loans_with', 'survey_student_loans_without',
+                    'survey_wealth_tax_savings','survey_wealth_tax_savings_number', 'survey_repatriation', 
+                    'survey_tax_rates_1', 'survey_tax_rates_2', 
+                    'survey_tax_rates_3', 'survey_tax_rates_4', 'survey_tax_rates_5', 'survey_tax_rates_1_prob', 'survey_tax_rates_2_prob', 
+                    'survey_tax_rates_3_prob', 'survey_tax_rates_4_prob', 'survey_tax_rates_5_prob','annual_income')
+
+# Use grep to find columns that start with 'otfe.1.player.' and end with any of the survey_columns
+df <- df %>%
+  rename_with(~ gsub("^otfe\\.1\\.player\\.", "", .), 
+              .cols = starts_with("otfe.1.player.") & ends_with(survey_columns))
+
+```
+
+
+
+```{r} 
+
+
+# Define time periods
+period <- c(rep("Period 1", 1), rep("Period 2", 2), rep("Period 3", 3), rep("Period 4", 1))
+
+# Define belief categories (to match each column)
+belief_category <- c("beliefs1", "beliefs1_2", "beliefs2", "beliefs1_3", "beliefs2_3", "beliefs3", "beliefs4")
+
+# Assign some example belief values (replace these with actual averages from your data)
+belief_value <- sapply(belief_category, function(col) mean(df[[col]], na.rm = TRUE))
+
+# Create dataframe
+belief_data <- data.frame(period, belief_category, belief_value)
+
+# Define colors for belief groups
+belief_colors <- c("beliefs1" = "blue", "beliefs1_2" = "blue", "beliefs1_3" = "blue",
+                   "beliefs2" = "red", "beliefs2_3" = "red",
+                   "beliefs3" = "green", "beliefs4" = "purple")
+
+# Create grouped bar plot
+plot <- ggplot(belief_data, aes(x = period, y = belief_value, fill = belief_category)) + 
+  geom_bar(position = "dodge", stat = "identity", color = "black") +
+  scale_fill_manual(values = belief_colors) +
+  labs(x = "Period", y = "Average Belief", title = "Average Beliefs per Period") +
+  theme_minimal()
+
+
+print(plot)
+
+# Save the plot
+ggsave(filename = file.path(output_folder, "beliefs.png"),
+       plot = plot,
+       width = 10, height = 6)
+
+
+
+treatment_list <- list("C-NoInfo", "C-Info", "T1-T-NoInfo", "T1-T-Info", "T1-P", "T2-T")
+
+# Assign belief values based on the belief categories for each treatment group
+belief_values <- sapply(belief_category, function(col) {
+  tapply(df[[col]], df$participant.treatment, FUN = function(x) mean(x, na.rm = TRUE))
+})
+
+# Convert belief_values into a tidy format for ggplot
+
+
+# Convert belief_values (matrix) to a proper data frame
+belief_data2 <- as.data.frame(belief_values)
+
+# Add treatment column (rownames contain treatment names)
+belief_data2$treatment <- rownames(belief_values)
+
+# Convert wide data to long format with three columns
+belief_values_long <- belief_data2 %>%
+  pivot_longer(cols = -treatment,  # All columns except 'treatment'
+               names_to = "belief_category", 
+               values_to = "belief_value") %>%
+  arrange(treatment)  # Optional: Ensure ordering by treatment
+
+
+belief_data2 <- belief_values_long %>%
+  mutate(period = case_when(
+    belief_category == "beliefs1" ~ "Period 1",
+    belief_category %in% c("beliefs1_2", "beliefs2") ~ "Period 2",
+    belief_category %in% c("beliefs1_3", "beliefs2_3", "beliefs3") ~ "Period 3",
+    belief_category == "beliefs4" ~ "Period 4"
+  ))
+
+# Ensure the `period` and `treatment` columns are factors with the correct order
+belief_data2$period <- factor(belief_data2$period, levels = c("Period 1", "Period 2", "Period 3", "Period 4"))
+belief_data2$treatment <- factor(belief_data2$treatment, levels = treatment_list) # Ensure treatment is ordered properly
+belief_data2$belief_category <- factor(belief_data2$belief_category, levels = belief_category)  # Order belief categories
+
+# Define colors for belief groups
+belief_colors <- c("beliefs1" = "blue", "beliefs1_2" = "blue", "beliefs1_3" = "blue",
+                   "beliefs2" = "red", "beliefs2_3" = "red",
+                   "beliefs3" = "green", "beliefs4" = "purple")
+
+# Create grouped bar plot by period and treatment with adjusted bar width
+plot <- ggplot(belief_data2, aes(x = period, y = belief_value, fill = belief_category)) + 
+  geom_bar(position = "dodge", stat = "identity", color = "black") +  # Adjust bar width here
+  scale_fill_manual(values = belief_colors) +
+  facet_wrap(~ treatment) + # Facet by treatment, allow y axis scaling per facet
+  labs(x = "Period", y = "Average Belief", title = "Average Beliefs per Period by Treatment") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better visibility
+
+print(plot)
+
+# Save the plot
+ggsave(filename = file.path(output_folder, "beliefs_by_treatment.png"),
+       plot = plot,
+       width = 12, height = 8)
+
+```
+
+
+```{r}
+ # Define the survey questions and their labels
+  survey_questions <- list(
+    survey_student_loans_with_likert = "Loan willingness WITH Relief",
+    survey_student_loans_without_likert = "Loan willingness WITHOUT Relief",
+    survey_pandemic = "Effect of pandemic loan forgiveness on willingness to take loans",
+    survey_wealth_tax_savings = "Effect of one-time wealth tax on savings",
+    survey_wealth_tax_consumption = "Effect of one-time wealth tax on consumption",
+  #  survey_wealth_tax_personal_savings = "Personal savings change due to wealth tax",
+  #  survey_wealth_tax_personal_consumption = "Personal consumption change due to wealth tax",
+    survey_repatriation = "Effect of repatriation amnesties on tax evasion",
+    survey_one_time_policies = "Should countries rely on one-time policies?",
+    survey_tax_rates_1 = "Likelihood of tax rate change in 3 months",
+    survey_tax_rates_2 = "Likelihood of tax rate change in 6 months",
+    survey_tax_rates_3 = "Likelihood of tax rate change in 1 year",
+    survey_tax_rates_4 = "Likelihood of tax rate change in 5 years",
+    survey_tax_rates_5 = "Likelihood of tax rate change in 10 years"
+  )
+  
+  # Define answer choices for relabeling
+  answer_choices <- list(
+    "survey_student_loans_with_likert" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very Likely"),
+    "survey_student_loans_without_likert" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very Likely"),
+    "survey_pandemic" = c("1" = "Definitely less willing", "2" = "Less willing", "3" = "No change", "4" = "More willing", "5" = "Definitely more willing"),
+    "survey_wealth_tax_savings" = c("1" = "Definitely save less", "2" = "Save less", "3" = "No change", "4" = "Save more", "5" = "Definitely save more"),
+    "survey_wealth_tax_consumption" = c("1" = "Definitely spend less", "2" = "Spend less", "3" = "No change", "4" = "Spend more", "5" = "Definitely spend more"),
+  #  "survey_wealth_tax_personal_savings" = c("1" = "Definitely save less", "2" = "Save less", "3" = "No change", "4" = "Save more", "5" = "Definitely save more"),
+  #  "survey_wealth_tax_personal_consumption" = c("1" = "Definitely spend less", "2" = "Spend less", "3" = "No change", "4" = "Spend more", "5" = "Definitely spend more"),
+    "survey_repatriation" = c("1" = "Definitely discourage", "2" = "Discourage", "3" = "No change", "4" = "Encourage", "5" = "Definitely encourage"),
+    "survey_one_time_policies" = c("1" = "Definitely rely less", "2" = "Rely less", "3" = "No change", "4" = "Rely more", "5" = "Definitely rely more"),
+    "survey_tax_rates_1" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
+    "survey_tax_rates_2" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
+    "survey_tax_rates_3" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
+    "survey_tax_rates_4" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
+    "survey_tax_rates_5" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely")
+  )
+  
+  for (question in names(survey_questions)) {
+    if (question %in% names(df)) {
+      df[[question]] <- factor(df[[question]], levels = names(answer_choices[[question]]), labels = answer_choices[[question]])
+      
+      plot <- ggplot(df, aes(x = .data[[question]])) +
+        geom_bar(fill = "skyblue", color = "black") +
+        scale_x_discrete(drop = FALSE) +  # Ensure all levels appear in the plot
+        labs(x = "Response", y = "Frequency", title = survey_questions[[question]]) +
+        theme_minimal() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      
+      print(plot) # Ensure it appears in RMarkdown
+      
+      ggsave(filename = file.path(output_folder, paste0(question, "_frequency.png")),
+             plot = plot,
+             width = 8, height = 6)
+    }
+  }
+
+```
+```{r}
+feedback_columns <- c("feedback", "feedback_difficulty", "feedback_understanding", "feedback_satisfied", "feedback_pay")
+
+# Remove the 'participant.' prefix only from specified columns
+df <- df %>%
+  rename_with(~ gsub("^participant\\.", "", .), 
+              .cols = starts_with("participant.") & ends_with(feedback_columns))
+```
+
+```{r}
+
+variables <- c("feedback_difficulty", "feedback_understanding", "feedback_satisfied", "feedback_pay")
+  
+for (var in variables) {
+  plot <- ggplot(df, aes_string(x = var)) +
+    geom_bar(fill = "skyblue", color = "black", width = 1) +
+    scale_x_continuous(breaks = 1:10, limits = c(-1, 12)) +
+    labs(x = var, y = "Frequency", title = paste("Histogram of", var)) +
+    theme_minimal()
+  
+  print(plot)
+  # Save the plot to the specified folder
+  ggsave(filename = file.path(output_folder, paste0(var, "_histogram.png")),
+         plot = plot,
+         width = 8, height = 6)
+}
+
+
+# Select only the renamed columns
+df_subset <- df %>%
+  select(participant.label, feedback, all_of(variables))
+
+# Save the selected columns as a CSV
+write.csv(df_subset, file = file.path(output_folder, "feedback.csv"), row.names = FALSE)
+```
+
+```{r} 
+
+# Create a new column manually
+df$adjusted_payoff <- round(pmax(0, df$participant.payoff - 0.48), 2)
+
+# Filter for strictly positive values
+df_output <- df[df$adjusted_payoff > 0, c("participant.label", "adjusted_payoff")]
+
+# Save as a TXT file (comma-separated)
+write_delim(df_output, "adjusted_payoff.txt", delim = ",", col_names = TRUE)
+```

@@ -29,7 +29,7 @@ df <- df %>% filter(participant.finished == 1)
 # Define the folder name variable
 folder_name <- "output_2025-02-21-pilot_6"
 
-quality_subsample <- FALSE
+quality_subsample <- TRUE
 output_file_name <- "report"
 
 if (quality_subsample) {
@@ -521,4 +521,26 @@ df_output <- df[df$adjusted_payoff > 0, c("participant.label", "adjusted_payoff"
 
 # Save as a TXT file (comma-separated)
 write_delim(df_output, "adjusted_payoff.txt", delim = ",", col_names = TRUE)
+```
+
+
+```{r}
+
+
+# Define the specific columns
+selected_columns <- c(
+  "attention_check", "duration_minutes", "participant.payoff", "participant.treatment",
+  "training_correctAttempts", "work_1_correctAttempts", "work_2_correctAttempts", "work_3_correctAttempts",
+  "training_incorrectAttempts", "work_1_incorrectAttempts", "work_2_incorrectAttempts", "work_3_incorrectAttempts",
+  "participant.label",
+  survey_columns, belief_category, feedback_columns  # Include the lists of column names
+)
+
+# Select only these columns
+df_selected <- df %>% select(all_of(selected_columns))
+
+# Save as CSV file
+write_csv(df_selected, "pilot_6.csv", col_names = TRUE)
+
+
 ```

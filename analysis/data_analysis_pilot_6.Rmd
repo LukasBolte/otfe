@@ -29,7 +29,7 @@ df <- df %>% filter(participant.finished == 1)
 # Define the folder name variable
 folder_name <- "output_2025-02-21-pilot_6"
 
-quality_subsample <- TRUE
+quality_subsample <- FALSE
 output_file_name <- "report"
 
 if (quality_subsample) {
@@ -442,7 +442,7 @@ ggsave(filename = file.path(output_folder, "beliefs_by_treatment.png"),
     "survey_student_loans_with_likert" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very Likely"),
     "survey_student_loans_without_likert" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very Likely"),
     "survey_pandemic" = c("1" = "Definitely less willing", "2" = "Less willing", "3" = "No change", "4" = "More willing", "5" = "Definitely more willing"),
-    "survey_wealth_tax_savings" = c("1" = "Definitely save less", "2" = "Save less", "3" = "No change", "4" = "Save more", "5" = "Definitely save more"),
+    "survey_wealth_tax_savings" = c("1" = "Spend/consume much less", "2" = "Spend/consume somewhat less", "3" = "No change", "4" = "Spend/consume somewhat more", "5" = "Spend/consume much more"),
     "survey_wealth_tax_consumption" = c("1" = "Definitely spend less", "2" = "Spend less", "3" = "No change", "4" = "Spend more", "5" = "Definitely spend more"),
   #  "survey_wealth_tax_personal_savings" = c("1" = "Definitely save less", "2" = "Save less", "3" = "No change", "4" = "Save more", "5" = "Definitely save more"),
   #  "survey_wealth_tax_personal_consumption" = c("1" = "Definitely spend less", "2" = "Spend less", "3" = "No change", "4" = "Spend more", "5" = "Definitely spend more"),

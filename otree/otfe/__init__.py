@@ -100,9 +100,9 @@ class Player(BasePlayer):
         label='<strong>How many transcription tasks are you able to complete per work period?</strong>'
         )
 
-    survey_student_loans_with = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition?</b>')
+    survey_student_loans_with = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition for yourself or a family member?</b>')
 
-    survey_student_loans_without = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition?</b>')
+    survey_student_loans_without = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition for yourself or a family member?</b>')
 
     survey_student_loans_with_likert = models.IntegerField(
         blank=True,
@@ -112,7 +112,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='<b>How likely would you take out a student loan to afford university tuition for yourself or a family member?</b>',
+        label='<b>How likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b>',
         widget=widgets.RadioSelectHorizontal,
     )
 
@@ -124,7 +124,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='<p>Assuming that such efforts to cancel pre-existing, outstanding student had been <i>successful</i> in the recent past, <b>how likely would you take out a student loan to afford university tuition for yourself or a family member?</b></p>',
+        label='<p>Assuming that such efforts to cancel pre-existing, outstanding student debt had been <i>successful</i> in the recent past, <b>how likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b></p>',
         widget=widgets.RadioSelectHorizontal,
     )
 

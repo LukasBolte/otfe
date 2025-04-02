@@ -126,7 +126,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='Continue supposing that you or a family member were attending university in the near future and assume that efforts to cancel pre-existing, outstanding student debt had been <i>successful</i> in the recent past. <b>How likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b>',
+        label='Continue supposing that you or a family member were attending university in the near future and assume that efforts to cancel pre-existing, outstanding student debt had been successful. <b>How likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b>',
         widget=widgets.RadioSelectHorizontal,
     )
 

@@ -100,6 +100,20 @@ class Player(BasePlayer):
         label='<strong>How many transcription tasks are you able to complete per work period?</strong>'
         )
 
+    survey_student_loans_likelihood = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Much less likely'),
+            (2, 'Somewhat less likely'),
+            (3, 'Equally as likely'),
+            (4, 'Somewhat more likely'),
+            (5, 'Much more likely'),
+            ],
+        label='If such a one-time cancellation of pre-existing student loan debt took place, <b>do you think another similar student debt cancellation in the near future is:</b>',
+        widget=widgets.RadioSelectHorizontal,
+    )   
+    
+    
     survey_student_loans_with = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition for yourself or a family member?</b>')
 
     survey_student_loans_without = models.IntegerField(min=0, max=100, label='<b>What probability (%, between 0 and 100) would you assign to you taking out a student loan to afford university tuition for yourself or a family member?</b>')
@@ -112,7 +126,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='<b>How likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b>',
+        label='Continue supposing that you or a family member were attending university in the near future and assume that efforts to cancel pre-existing, outstanding student debt had been <i>successful</i> in the recent past. <b>How likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b>',
         widget=widgets.RadioSelectHorizontal,
     )
 
@@ -124,7 +138,7 @@ class Player(BasePlayer):
             (3, 'Likely'),
             (4, 'Very likely'),
             ],
-        label='<p>Assuming that such efforts to cancel pre-existing, outstanding student debt had been <i>successful</i> in the recent past, <b>how likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b></p>',
+        label='<b>How likely would you be to take out a student loan to afford university tuition for yourself or a family member?</b>',
         widget=widgets.RadioSelectHorizontal,
     )
 
@@ -141,6 +155,22 @@ class Player(BasePlayer):
         widget=widgets.RadioSelectHorizontal,
     )
 
+    survey_wealth_tax_savings_likelihood = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Spend/consume much less',),
+            (1, 'Much less likely'),
+            (2, 'Somewhat less likely'),
+            (3, 'Equally as likely'),
+            (4, 'Somewhat more likely'),
+            (5, 'Much more likely'),
+            ],
+        label="<p>If your government had implemented one such one-time wealth tax, <b>do you think either another similar one-time wealth tax or a permanent change in wealth taxation in the near future is:</b></p>",
+        widget=widgets.RadioSelect,
+    )   
+
+
+
     survey_wealth_tax_savings = models.IntegerField(
         blank=True,
         choices=[
@@ -150,7 +180,7 @@ class Player(BasePlayer):
             (4, 'Spend/consume somewhat more'),
             (5, 'Spend/consume much more'),
             ],
-        label="<p>If your government had implemented one of these one-time wealth taxes in the recent past, <b>would knowledge of this event lead you to change the <i>amount you normally spend/consume out of your existing savings/wealth?</i></b></p>",
+        label="<p>If your government had implemented one such one-time wealth tax, <b>would knowledge of this event lead you to change the <i>amount you normally save out of your income?</i></b></p>",
         widget=widgets.RadioSelect,
     )
 
@@ -199,6 +229,19 @@ class Player(BasePlayer):
         widget=widgets.RadioSelectHorizontal,
     )  
     
+    survey_repatriation_likelihood = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, 'Much less likely'),
+            (2, 'Somewhat less likely'),
+            (3, 'Equally as likely'),
+            (4, 'Somewhat more likely'),
+            (5, 'Much more likely'),
+        ],
+        label='If your government had implemented a repatriation amnesty, <b>do you think another repatriation amnesty in the near future is:</b>',
+        widget=widgets.RadioSelectHorizontal,
+    )
+
     survey_repatriation = models.IntegerField(
         blank=True,
         choices=[
@@ -208,7 +251,7 @@ class Player(BasePlayer):
             (4, 'Encourage'),
             (5, 'Definitely encourage')
         ],
-        label='<p>High-earning and high-wealth taxpayers often hide their money abroad in order to avoid and evade domestic taxes. However, in the past, many governments have offered programs called "repatriation amnesties" that allow people to "repatriate" their money domestically from abroad at no or reduced penalties. That is, under these "repatriation amnesties," high-earning and high-wealth taxpayers can bring their income and wealth back home while paying reduced taxes and/or penalties than they would if they were caught.</p><p>If you were a high-earning or high-wealth taxpayer, <b>would knowledge that the government has offered these programs in the past discourage or encourage you from hiding money abroad to avoid/evade taxes in the future?</b></p>',
+        label='If your government had implemented a repatriation amnesty in the recent past and you were a high-earning or high-wealth taxpayer, <b>would knowledge of this event discourage or encourage you from hiding money abroad to avoid/evade taxes in the future?</b>',
         widget=widgets.RadioSelectHorizontal,
     )
    
@@ -233,7 +276,7 @@ class Player(BasePlayer):
             (3, 'Likely'),  
             (4, 'Very likely')
             ],
-        label='<p><b>...in the next 3 months?</b></p>',
+        label='<b>...in the next 3 months?</b>',
         widget=widgets.RadioSelect,
     )
 
@@ -245,7 +288,7 @@ class Player(BasePlayer):
             (3, 'Likely'),  
             (4, 'Very likely')
             ],
-        label='<p><b>...in the next 6 months?</b></p>',
+        label='<b>...in the next 6 months?</b>',
         widget=widgets.RadioSelect,
     )
 
@@ -257,7 +300,7 @@ class Player(BasePlayer):
             (3, 'Likely'),  
             (4, 'Very likely')
             ],
-        label='<p><b>...in the next year?</b></p>',
+        label='<b>...in the next year?</b>',
         widget=widgets.RadioSelect,
     )
 
@@ -269,7 +312,7 @@ class Player(BasePlayer):
             (3, 'Likely'),  
             (4, 'Very likely') 
             ],
-        label='<p><b>...in the next 5 years?</b></p>',
+        label='<b>...in the next 5 years?</b>',
         widget=widgets.RadioSelect,
     )
 
@@ -281,7 +324,7 @@ class Player(BasePlayer):
             (3, 'Likely'),  
             (4, 'Very likely') 
             ],
-        label='<p><b>...in the next 10 years?</b></p>',
+        label='<b>...in the next 10 years?</b>',
         widget=widgets.RadioSelect,
     )
 
@@ -614,14 +657,14 @@ class Transition4(Page):
 
 class Survey(Page):
     form_model = 'player'
-    form_fields = ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']
+    form_fields = ['survey_student_loans_likelihood', 'survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']
 
     @staticmethod
     def error_message(player, values):
 
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']:
+            for field_name in ['survey_student_loans_likelihood', 'survey_student_loans_with', 'survey_student_loans_without', 'survey_student_loans_with_likert', 'survey_student_loans_without_likert']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages
@@ -632,14 +675,14 @@ class Survey(Page):
 
 class Survey2(Page):
     form_model = 'player'
-    form_fields = ['survey_wealth_tax_savings','survey_wealth_tax_savings_number']
+    form_fields = ['survey_wealth_tax_savings_likelihood', 'survey_wealth_tax_savings','survey_wealth_tax_savings_number']
 
     @staticmethod
     def error_message(player, values):
 
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_wealth_tax_savings','survey_wealth_tax_savings_number']:
+            for field_name in ['survey_wealth_tax_savings_likelihood', 'survey_wealth_tax_savings','survey_wealth_tax_savings_number']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
                     if values['survey_wealth_tax_savings'] == 3:
@@ -652,13 +695,13 @@ class Survey2(Page):
         
 class Survey3(Page):
     form_model = 'player'
-    form_fields = [ 'survey_repatriation']
+    form_fields = ['survey_repatriation_likelihood', 'survey_repatriation']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_repatriation']:
+            for field_name in ['survey_repatriation_likelihood', 'survey_repatriation']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages

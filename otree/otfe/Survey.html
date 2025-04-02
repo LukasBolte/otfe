@@ -13,23 +13,20 @@ Question 1
         Suppose you or a family member were attending university in the near future.
     </p>
 
-    {{ formfield 'survey_student_loans_with_likert' }}
+    {{ formfield 'survey_student_loans_without_likert' }}
 
+    {{ formfield 'survey_student_loans_without' }}
 
-
-    {{ formfield 'survey_student_loans_with' }}
-
+    <br>
     <p>
         Past US presidential administrations and campaigns have announced their intention to eliminate student debt <i>only</i> among those with outstanding student loan debt. These plans would not, on their own, have eliminated student debt entirely for all students in the future.
     </p>
 
-    <p>
-        Continue supposing that you or a family member were attending university in the near future.
-    </p>
+    {{ formfield 'survey_student_loans_likelihood' }}
 
-    {{ formfield 'survey_student_loans_without_likert' }}
+    {{ formfield 'survey_student_loans_with_likert' }}
 
-    {{ formfield 'survey_student_loans_without' }}
+    {{ formfield 'survey_student_loans_with' }}
 
 <button style="float: right" class="otree-btn-next btn btn-primary">Submit</button>
 

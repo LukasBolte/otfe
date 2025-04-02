@@ -533,7 +533,7 @@ selected_columns <- c(
   "training_correctAttempts", "work_1_correctAttempts", "work_2_correctAttempts", "work_3_correctAttempts",
   "training_incorrectAttempts", "work_1_incorrectAttempts", "work_2_incorrectAttempts", "work_3_incorrectAttempts",
   "participant.label",
-  survey_columns, belief_category, feedback_columns  # Include the lists of column names
+  survey_columns, belief_category, feedback_columns, mistake_columns  # Include the lists of column names
 )
 
 # Select only these columns

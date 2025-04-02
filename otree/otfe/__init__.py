@@ -158,7 +158,6 @@ class Player(BasePlayer):
     survey_wealth_tax_savings_likelihood = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Spend/consume much less',),
             (1, 'Much less likely'),
             (2, 'Somewhat less likely'),
             (3, 'Equally as likely'),

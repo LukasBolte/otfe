@@ -64,11 +64,11 @@ Question 2
 
             // Set label text based on selection
             if (value === "1" || value === "2") {
-                labelText = "You indicated that you would save <i>less</i>. <b>By how much (in USD) would you decrease your monthly savings out of your existing savings/wealth?</b>";
+                labelText = "You indicated that you would save <i>less</i>. <b>By how much (in USD) would you decrease your monthly savings out of your income?</b>";
             } else if (value === "3") {
                 labelText = "<i>Proceed to the next question.</i>";
             } else if (value === "4" || value === "5") {
-                labelText = "You indicated that you would save <i>more</i>. <b>By how much (in USD) would you increase your monthly savings out of your existing savings/wealth?</b>";
+                labelText = "You indicated that you would save <i>more</i>. <b>By how much (in USD) would you increase your monthly savings out of your income?</b>";
             }
 
             $('label[for="id_survey_wealth_tax_savings_number"]').get(0).innerHTML = labelText;

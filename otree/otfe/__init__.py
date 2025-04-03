@@ -173,11 +173,11 @@ class Player(BasePlayer):
     survey_wealth_tax_savings = models.IntegerField(
         blank=True,
         choices=[
-            (1, 'Spend/consume much less',),
-            (2, 'Spend/consume somewhat less'),
+            (1, 'Save much less',),
+            (2, 'Save somewhat less'),
             (3, 'No change'),
-            (4, 'Spend/consume somewhat more'),
-            (5, 'Spend/consume much more'),
+            (4, 'Save somewhat more'),
+            (5, 'Save much more'),
             ],
         label="<p>If your government had implemented one such one-time wealth tax, <b>would knowledge of this event lead you to change the <i>amount you normally save out of your income?</i></b></p>",
         widget=widgets.RadioSelect,

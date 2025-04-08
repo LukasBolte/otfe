@@ -164,7 +164,7 @@ class Player(BasePlayer):
             (4, 'Somewhat more likely'),
             (5, 'Much more likely'),
             ],
-        label="<p>If your government had implemented one such one-time wealth tax, <b>do you think either another similar one-time wealth tax or a permanent change in wealth taxation in the near future is:</b></p>",
+        label="If your government had implemented one such one-time wealth tax, <b>do you think either another similar one-time wealth tax or a permanent change in wealth taxation in the near future is:</b>",
         widget=widgets.RadioSelect,
     )   
 
@@ -179,7 +179,7 @@ class Player(BasePlayer):
             (4, 'Save somewhat more'),
             (5, 'Save much more'),
             ],
-        label="<p>If your government had implemented one such one-time wealth tax, <b>would knowledge of this event lead you to change the <i>amount you normally save out of your income?</i></b></p>",
+        label="If your government had implemented one such one-time wealth tax, <b>would knowledge of this event lead you to change the <i>amount you normally save out of your income?</i></b>",
         widget=widgets.RadioSelect,
     )
 

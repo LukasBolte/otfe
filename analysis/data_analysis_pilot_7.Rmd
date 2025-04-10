@@ -22,12 +22,12 @@ library(extrafont)
 library(factoextra)
 library(GGally)
 
-csv_file <- "data/all_apps_wide_2025-03-27.csv"
+csv_file <- "data/all_apps_wide_2025-04-09.csv"
 df <- read_csv(csv_file) 
 df <- df %>% filter(participant.finished == 1)
 
 # Define the folder name variable
-folder_name <- "output_2025-02-21-pilot_6"
+folder_name <- "output_2025-04-09-pilot_7"
 
 quality_subsample <- FALSE
 output_file_name <- "report"
@@ -305,8 +305,7 @@ df <- df %>%
   rename_with(~ gsub("^participant\\.", "", .), 
               .cols = starts_with("participant.") & ends_with(belief_columns))
 
-survey_columns <- c('survey_student_loans_with_likert', 'survey_student_loans_without_likert','survey_student_loans_with', 'survey_student_loans_without',
-                    'survey_wealth_tax_savings','survey_wealth_tax_savings_number', 'survey_repatriation', 
+survey_columns <- c('survey_student_loans_with_likert', 'survey_student_loans_without_likert','survey_student_loans_with', 'survey_student_loans_without','survey_student_loans_likelihood','survey_wealth_tax_savings_likelihood','survey_wealth_tax_savings','survey_wealth_tax_savings_number', 'survey_repatriation', 'survey_repatriation_likelihood',
                     'survey_tax_rates_1', 'survey_tax_rates_2', 
                     'survey_tax_rates_3', 'survey_tax_rates_4', 'survey_tax_rates_5', 'survey_tax_rates_1_prob', 'survey_tax_rates_2_prob', 
                     'survey_tax_rates_3_prob', 'survey_tax_rates_4_prob', 'survey_tax_rates_5_prob','annual_income')
@@ -439,10 +438,12 @@ ggsave(filename = file.path(output_folder, "beliefs_by_treatment.png"),
   
   # Define answer choices for relabeling
   answer_choices <- list(
+    "survey_student_loans_likelihood" = c("1" = "Much less likely", "2" = "Somewhat less likely", "3" = "Equally as likely", "4" = "Somewhat more likely", "5" = "Much more likely"),
     "survey_student_loans_with_likert" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very Likely"),
     "survey_student_loans_without_likert" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very Likely"),
+    "survey_wealth_tax_savings_likelihood" = c("1" = "Much less likely", "2" = "Somewhat less likely", "3" = "Equally as likely", "4" = "Somewhat more likely", "5" = "Much more likely"),
     "survey_pandemic" = c("1" = "Definitely less willing", "2" = "Less willing", "3" = "No change", "4" = "More willing", "5" = "Definitely more willing"),
-    "survey_wealth_tax_savings" = c("1" = "Spend/consume much less", "2" = "Spend/consume somewhat less", "3" = "No change", "4" = "Spend/consume somewhat more", "5" = "Spend/consume much more"),
+    "survey_wealth_tax_savings" = c("1" = "Save much less", "2" = "Save somewhat less", "3" = "No change", "4" = "Save somewhat more", "5" = "Save much more"),
     "survey_wealth_tax_consumption" = c("1" = "Definitely spend less", "2" = "Spend less", "3" = "No change", "4" = "Spend more", "5" = "Definitely spend more"),
   #  "survey_wealth_tax_personal_savings" = c("1" = "Definitely save less", "2" = "Save less", "3" = "No change", "4" = "Save more", "5" = "Definitely save more"),
   #  "survey_wealth_tax_personal_consumption" = c("1" = "Definitely spend less", "2" = "Spend less", "3" = "No change", "4" = "Spend more", "5" = "Definitely spend more"),
@@ -452,7 +453,21 @@ ggsave(filename = file.path(output_folder, "beliefs_by_treatment.png"),
     "survey_tax_rates_2" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
     "survey_tax_rates_3" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
     "survey_tax_rates_4" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
-    "survey_tax_rates_5" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely")
+    "survey_tax_rates_5" = c("1" = "Very unlikely", "2" = "Unlikely", "3" = "Likely", "4" = "Very likely"),
+    "annual_income" = c(
+      "1" = "Less than $10,000",
+      "2" = "$10,000 - $19,999",
+      "3" = "$20,000 - $29,999",
+      "4" = "$30,000 - $39,999",
+      "5" = "$40,000 - $49,999",
+      "6" = "$50,000 - $59,999",
+      "7" = "$60,000 - $69,999",
+      "8" = "$70,000 - $79,999",
+      "9" = "$80,000 - $89,999",
+      "10" = "$90,000 - $99,999",
+      "11" = "$100,000 - $149,999",
+      "12" = "More than $150,000"
+    )
   )
   
   for (question in names(survey_questions)) {
@@ -514,7 +529,7 @@ write.csv(df_subset, file = file.path(output_folder, "feedback.csv"), row.names 
 ```{r} 
 
 # Create a new column manually
-df$adjusted_payoff <- round(pmax(0, df$participant.payoff - 0.48), 2)
+df$adjusted_payoff <- round(pmax(0, df$participant.payoff - 0.76), 2)
 
 # Filter for strictly positive values
 df_output <- df[df$adjusted_payoff > 0, c("participant.label", "adjusted_payoff")]
@@ -540,7 +555,7 @@ selected_columns <- c(
 df_selected <- df %>% select(all_of(selected_columns))
 
 # Save as CSV file
-write_csv(df_selected, "pilot_6.csv", col_names = TRUE)
+write_csv(df_selected, "pilot_7.csv", col_names = TRUE)
 
 
 ```

@@ -267,6 +267,21 @@ class Player(BasePlayer):
     #     widget=widgets.RadioSelectHorizontal,
     # )
 
+    survey_top_marginal_tax = models.IntegerField(
+        blank=True,
+        choices=[
+            (1, '10%'),
+            (2, '12%'),
+            (3, '22%'),
+            (4, '24%'),
+            (5, '32%'),
+            (6, '35%'),
+            (7, '37%'),
+            ],
+        label='The above table shows the US personal income tax schedule for a single filer in 2024. According to the table above, <b>what is your current top marginal tax rate (as indicated under the column titled "2024 tax rate")?</b>',
+        widget=widgets.RadioSelectHorizontal,
+    )  
+
     survey_tax_rates_1 = models.IntegerField(
         blank=True,
         choices=[
@@ -327,11 +342,11 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
     )
 
-    survey_tax_rates_1_prob = models.IntegerField(min=0, max=100, label='<b>With what probability (%, between 0 and 100)?</b>')
-    survey_tax_rates_2_prob = models.IntegerField(min=0, max=100, label='<b>With what probability (%, between 0 and 100)?</b>')
-    survey_tax_rates_3_prob = models.IntegerField(min=0, max=100, label='<b>With what probability (%, between 0 and 100)?</b>')
-    survey_tax_rates_4_prob = models.IntegerField(min=0, max=100, label='<b>With what probability (%, between 0 and 100)?</b>')
-    survey_tax_rates_5_prob = models.IntegerField(min=0, max=100, label='<b>With what probability (%, between 0 and 100)?</b>')
+    survey_tax_rates_1_prob = models.IntegerField(min=0, max=100, label='<b>What is your expected top marginal tax rate in 3 months? <br><br>(%, between 0 and 100)</b>')
+    survey_tax_rates_2_prob = models.IntegerField(min=0, max=100, label='<b>What is your expected top marginal tax rate in 6 months? <br><br>(%, between 0 and 100)</b>')
+    survey_tax_rates_3_prob = models.IntegerField(min=0, max=100, label='<b>What is your expected top marginal tax rate in 1 year? <br><br>(%, between 0 and 100)</b>')
+    survey_tax_rates_4_prob = models.IntegerField(min=0, max=100, label='<b>What is your expected top marginal tax rate in 5 years? <br><br>(%, between 0 and 100)</b>')
+    survey_tax_rates_5_prob = models.IntegerField(min=0, max=100, label='<b>What is your expected top marginal tax rate in 10 years? <br><br>(%, between 0 and 100)</b>')
 
 
     annual_income = models.IntegerField(
@@ -709,13 +724,13 @@ class Survey3(Page):
 
 class Survey4(Page):
     form_model = 'player'
-    form_fields = ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob']
+    form_fields = ['survey_top_marginal_tax','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob']
 
     @staticmethod
     def error_message(player, values):
         if not player.session.config['development']:
             error_messages = dict()
-            for field_name in ['survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob']:
+            for field_name in ['survey_top_marginal_tax','survey_tax_rates_1','survey_tax_rates_2','survey_tax_rates_3','survey_tax_rates_4','survey_tax_rates_5','survey_tax_rates_1_prob','survey_tax_rates_2_prob','survey_tax_rates_3_prob','survey_tax_rates_4_prob','survey_tax_rates_5_prob']:
                 if values[field_name] is None:
                     error_messages[field_name] = 'Please answer the question'
             return error_messages

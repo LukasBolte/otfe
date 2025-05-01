@@ -12,8 +12,16 @@ Question 4
     <img src="{% static 'img/taxbrackets.jpg' %}" alt="Image" style="width: 80%; height: auto; margin-right: 5px;">
 </div>
 
-<p>The above table shows the US personal income tax schedule for a single filer in 2024. Ignoring changes to the cutoffs for each tax bracket due to inflation, <b>what do you think is the probability that the US personal income tax rate schedule will substantially change...</b></p>
-        
+{{ formfield 'survey_top_marginal_tax' }}
+
+<p>
+    <b>Assume your income does not change and is permanently fixed.</b>
+</p>
+
+<p>
+    Ignoring changes to the cutoffs for each tax bracket due to inflation, <b>what do you think is the probability that the US personal income tax rate schedule will substantially change...</b></p>
+</p>
+
 <div class="row">
     <div class="col-md-4">
         {{ formfield 'survey_tax_rates_1' }}
